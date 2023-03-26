@@ -2,7 +2,7 @@ import multer from 'multer';
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-      cb(null, 'uploads/') // specify the directory where the file will be saved
+      cb(null, 'public/uploads') // specify the directory where the file will be saved
     },
     filename: (req, file, cb) => {
       cb(null, file.originalname) // specify the name of the file on the server
@@ -10,4 +10,4 @@ const storage = multer.diskStorage({
   });
 const upload = multer({ storage });
 
-export default upload;
+export default upload;      

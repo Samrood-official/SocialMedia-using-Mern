@@ -3,39 +3,30 @@ import { useDispatch, useSelector } from 'react-redux';
 import { CameraIcon } from '../../icons/icons';
 import { setUserData } from '../../state/userReducer';
 import axios from '../../utils/axios';
-import { addProfilepPic } from '../../utils/constants'
+import { addProfilePic } from '../../utils/constants'
 import Avatar from '../smallComponants/Avatar';
 const ProfilePic = () => {
     const [showInput, setShowInput] = useState(false);
-    const [oldImageshow, setoldImageshow] = useState(true);
     const [image, setImage] = useState(null);
-    const [oldimage, setnewImage] = useState(null);
     const userData = useSelector((state) => state.user)
     const dispatch = useDispatch()
-    console.log("userData444444444444444444");
-    console.log(userData);
     function handleImageChange(e) {
         const file = e.target.files[0];
         setImage(file)
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = function () {
-            setnewImage(reader.result);
-        };
     }
     function handleSubmit(e) {
         e.preventDefault();
-        setShowInput(false)
         const formData = new FormData();
         formData.append('file', image);
         formData.append('userId', userData._id);
-        axios.post(addProfilepPic, formData, {
+        axios.post(addProfilePic, formData, {
             headers: {
                 'Content-Type': 'multipart/form-data'
             }
         })
-            .then((response) => {
-                dispatch(setUserData(response.data))
+        .then((response) => {
+            dispatch(setUserData(response.data))
+            setShowInput(false)
             })
             .catch(error => {
                 console.error(error);
@@ -57,15 +48,17 @@ const ProfilePic = () => {
                     <Avatar size={'big'} />
                 </div>
             }
-            <div onClick={() => setShowInput(true)} className=' absolute top-40 cursor-pointer left-14'>
-                <CameraIcon />
+            <div onClick={() => setShowInput(true)} className=' absolute top-40 cursor-pointer left-14 flex gap-32'>
+                <label htmlFor='file' className='cursor-pointer'>
+                    <CameraIcon />
+                    <input type="file" id='file' onChange={handleImageChange} hidden/>
+                </label>
+                {showInput===true &&
+            <button className='font-bold border rounded-lg px-2 py-1 bg-gray-600' onClick={handleSubmit}>Submit</button>
+                }
             </div>
 
-            {showInput && <div className='absolute top-56 left-5 flex justify-between'>
-                <input type="file" onChange={handleImageChange} />
-                <button className='font-bold border rounded-lg px-2 bg-gray-600' onClick={handleSubmit}>Submit</button>
-            </div>
-            }
+
         </>
     )
 }

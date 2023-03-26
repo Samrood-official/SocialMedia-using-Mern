@@ -1,31 +1,26 @@
 import { Schema, model } from 'mongoose'
 
 const postSchema = Schema({
-    user:{
+    userId:{
         type:Schema.Types.ObjectId,
-        // required:true
-    },
-    title:{
-        type:String,
         required:true
-    },      
+    },
+    desc:{
+        type:String,
+        required:false
+    },     
     image:{
         type:String,
+        required:false
     },
-    video:{
-        type:String,
-    },
-    like:{
+    likes:{
         type:Array,
     },
-    // dislike:{
-    //     type:Array
-    // },
     comments:[
         {
-            user:{
+            userId:{
                 type:Schema.Types.ObjectId,
-                required:true
+                required:true        
             },
             userName:{
                 type:String,
@@ -37,6 +32,6 @@ const postSchema = Schema({
             }
         }
     ]
-})
+},{timestamps: true})
 
-export default model("posts",postSchema)
+export default model("post",postSchema)

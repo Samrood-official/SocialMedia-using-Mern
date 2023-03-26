@@ -26,8 +26,9 @@ import { verifyToken } from '../middleware/verifyToken.js'
 const router = express.Router()
 router.post('/signup', register)
 router.post('/login', login)
-router.post('/verifyEmail', verifyEmail)
-router.post('/addProfilepPic',upload.single('file'),addProfilepPic)
+router.post('/verifyEmail', verifyEmail)                          
+router.post('/addProfilepPic',upload.single("file"),addProfilepPic)
+router.post('/addPost',upload.single("file"),addPost)
 router.post('/forgotPassword',forgotPassword)
 router.put('/resetPassword',resetPassword)
 
@@ -40,11 +41,9 @@ router.put('/update/:id', verifyToken, updateUser)
 router.delete('/delete/:id', verifyToken, deleteUser)
 
 // upload post by one user
-router.get('/get/post', verifyToken, getPost)
+router.get('/getPost', verifyToken, getPost)
     
 router.post('/user/post', addPost)
-
-
 
 //update post
 router.put('/update/post/:id', updatePost)

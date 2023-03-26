@@ -26,27 +26,28 @@ export const register = async (req, res) => {
             password: hashedpassword,
             phoneNumber: req.body.phoneNumber
         })
+
         const accessToken = Jwt.sign({
             id: user._id,
             userName: user.userName,
-
         }, jwt_secret_key)
-        const otp = genrateotp()
+        await user.save()
 
+        //for emailverification
+        const otp = genrateotp()
         const verificationToken = await VerificationToken.create({
             user: user._id,
             token: otp
         })
         await verificationToken.save()
-        await user.save()
-
+        //sending otp to user mail
         transport.sendMail({
-            from: "sender@server.com",
+            from: "socialmedia@gmail.com",
             to: user.email,
             subject: "verify your email using otp",
             html: `<h1>Your Otp Code ${otp}</h1>`
         })
-        // res.status(200).json({ user, accessToken })
+        
         res.status(200).json({
             status: "pending",
             message: "Please check your email",
@@ -101,7 +102,6 @@ export const verifyEmail = async (req, res) => {
         }, jwt_secret_key)
         const { password, ...user } = mainuser._doc
 
-        //nodemailer    
         transport.sendMail({
             from: "socialmedia@gmail.com",
             to: user.email,
@@ -165,6 +165,40 @@ export const resetPassword = async (req, res) => {
     return res.status(200).json({ msg: 'check your email to reset password' })
 }
 
+//add post
+export const addPost = async (req, res) => {
+    try {
+        let { userId, desc } = req.body
+        let result = await cloudinary.uploader.upload(req.file.path)
+        console.log(result);
+        let newPost = new Post({
+            desc: desc,
+            image: result.secure_url,
+            userId: userId
+        })
+        const post = await newPost.save()
+        res.status(200).json(post)
+    } catch (err) {
+        return res.status(500).json("internal error occured")
+    }
+}
+
+//user posts
+export const getPost = async (req, res) => {
+    try {
+        console.log('get post called');
+        const mypost = await Post.find({ userId: req.user.id })
+        if (!mypost) {  
+            return res.status(400).json({msg:"you dont have any post"})
+        }
+        res.status(200).json(mypost)
+    } catch (err) {
+        res.status(500).json('internal error')   
+    }                   
+}
+
+
+//follow user
 export const followUser = async (req, res) => {
     try {
         if (req.params.id !== req.body.user) {
@@ -231,31 +265,9 @@ export const deleteUser = async (req, res) => {
     }
 }
 
-//add post
-export const addPost = async (req, res) => {
-    try {
-        let { title, image, video } = req.body
-        let newPost = new Post({
-            title, image, video, user: req.user.id
-        })
-        const post = await newPost.save()
-        res.status(200).json(post)
-    } catch (err) {
-        return res.status(500).json("internal error occured")
-    }
-}
 
-export const getPost = async (req, res) => {
-    try {
-        const mypost = await findById(req.user.id)
-        if (!mypost) {
-            return res.status(400).json("you dont have any post")
-        }
-        res.status(200).json(mypost)
-    } catch (err) {
-        res.status(500).json('internal error')
-    }
-}
+
+
 export const updatePost = async (req, res) => {
     try {
         let post = await findById(req.params.id)
@@ -319,6 +331,7 @@ export const deletePost = async (req, res) => {
 }
 export const addProfilepPic = async (req, res) => {
     try {
+        console.log("ff");
         const { userId } = req.body
         let result = await cloudinary.uploader.upload(req.file.path)
         let updatedUser = await User.findByIdAndUpdate(userId,

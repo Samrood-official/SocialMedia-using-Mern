@@ -7,7 +7,7 @@ const Leftbar = () => {
   const navigate = useNavigate()
 
   return (
-    <div className=' bg-white sticky left-0 top-36 z-10'>
+    <div className=' bg-white sticky left-0 top-36 z-10 shadow-lg shadow-gray-400'>
       <div className='p-4'>
         <Link to='/' className='text-xl font-medium block mb-4'>
           {/* My Social Media App */}

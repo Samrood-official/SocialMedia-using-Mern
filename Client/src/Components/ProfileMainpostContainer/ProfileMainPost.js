@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import Post from '../PostContainer/Post'
+import Feed from '../PostContainer/Feed'
 import Card from '../smallComponants/Card'
 import About from './About'
 import { useParams } from 'react-router-dom'
@@ -54,7 +54,7 @@ const ProfileMainPost = () => {
                 </p>
 
               </div>
-              {tab === "posts" && <Post />}
+              {tab === "posts" && <Feed />}
               {tab === "about" && <About />}
               {tab === "friends" && <Friends />}
               {tab === "images" && <Images />}

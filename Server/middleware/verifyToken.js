@@ -2,17 +2,16 @@ import Jwt from 'jsonwebtoken';
 const jwt_secret_key = "mywebtoken"
 
 const verifyToken = (req, res, next) => {
-    const authHeader = req.headers.token;
+    const authHeader = req.header("Authorization")
     if (authHeader) {
-        const token = authHeader
-        console.log(token);
+        const token = authHeader.split(" ")[1];
         Jwt.verify(token, jwt_secret_key, (err, user) => {
-            if (err) return res.status(400).json("Some error occured")
+            if (err){ return res.status(403).json("Token is not valid")}
             req.user = user
             next();
         })
     } else {
-        return res.status(400).json("Access Token is not valid")
+         res.status(401).json("you are not authenticated")
     }
 }
 export { verifyToken }

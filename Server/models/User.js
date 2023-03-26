@@ -15,7 +15,6 @@ const userSchema = Schema({
     },
     phoneNumber:{
         type:Number,
-        // required:true
     },
     profilePic:{
         type:String

@@ -7,7 +7,6 @@ import { useSelector } from 'react-redux';
 import VerifyEmail from './Pages/VerifyEmail/VerifyEmail';
 import ResetPassword from './Pages/ResetPassword/ResetPassword';
 import ForgottPassword from './Pages/ForgottPassword/ForgottPassword';
-import Post from './Components/PostContainer/Post';
 
 function App() {
   const userDetails = useSelector((state) => state.user)
