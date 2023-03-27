@@ -47,7 +47,7 @@ export const register = async (req, res) => {
             subject: "verify your email using otp",
             html: `<h1>Your Otp Code ${otp}</h1>`
         })
-        
+
         res.status(200).json({
             status: "pending",
             message: "Please check your email",
@@ -169,12 +169,17 @@ export const resetPassword = async (req, res) => {
 export const addPost = async (req, res) => {
     try {
         let { userId, desc } = req.body
-        let result = await cloudinary.uploader.upload(req.file.path)
+        let image = ""
+        let result;
+        if (req.file) {
+            result = await cloudinary.uploader.upload(req.file.path)
+            image = result.secure_url
+        }
         console.log(result);
         let newPost = new Post({
             desc: desc,
-            image: result.secure_url,
-            userId: userId
+            image: image,
+            author: userId
         })
         const post = await newPost.save()
         res.status(200).json(post)
@@ -186,15 +191,14 @@ export const addPost = async (req, res) => {
 //user posts
 export const getPost = async (req, res) => {
     try {
-        console.log('get post called');
-        const mypost = await Post.find({ userId: req.user.id })
-        if (!mypost) {  
-            return res.status(400).json({msg:"you dont have any post"})
+        const mypost = await Post.find({ author: req.user.id })
+        if (!mypost) {
+            return res.status(400).json({ msg: "you dont have any post" })
         }
         res.status(200).json(mypost)
     } catch (err) {
-        res.status(500).json('internal error')   
-    }                   
+        res.status(500).json('internal error')
+    }
 }
 
 
@@ -234,21 +238,20 @@ export const fetchPostFollowing = async (req, res) => {
 }
 export const updateUser = async (req, res) => {
     try {
-        if (req.params.id === req.body.user) {
-
-            if (req.body.password) {
-                const salt = await bcrypt.genSalt(10)
-                const password = await bcrypt.hash(req.body.password, salt)
-                req.body.password = password
-                const updatedUser = await User.findByIdAndUpdate(req.params.id, {
-                    $set: req.body
-                })
-                return res.status(200).json(updatedUser + "updated user data")
-            }
-        } else {
-            return res.status(400).json("you are not allowed to update this user details")
-        }
-
+        // if (req.body.password) {
+        //     const salt = await bcrypt.genSalt(10)
+        //     const password = await bcrypt.hash(req.body.password, salt)
+        //     req.body.password = password
+        // }
+        const updatedUser = await User.findByIdAndUpdate(req.body.userId, {
+            $set: {
+                userName: req.body.userName,
+                email: req.body.email,
+                phoneNumber: req.body.phoneNumber,
+                bio: req.body.bio
+            },
+        },{new:true})
+        return res.status(200).json({user:updatedUser})
     } catch (err) {
         return res.status(500).json('internal error occured')
     }
@@ -265,12 +268,9 @@ export const deleteUser = async (req, res) => {
     }
 }
 
-
-
-
 export const updatePost = async (req, res) => {
     try {
-        let post = await findById(req.params.id)
+        let post = await Post.findById(req.params.id)
         if (!post) return res.status(400).json("post not found")
         post = await findByIdAndUpdate(req.params.id, {
             $set: req.body
@@ -318,10 +318,11 @@ export const commentPost = async (req, res) => {
 }
 export const deletePost = async (req, res) => {
     try {
-        const post = await findById(req.param.id)
+        console.log(req.params);
+        const post = await Post.findById(req.params.id)
         if (post) {
-            await findByIdAndDelete(req.params.id)
-            return res.status(200).json("deleted post")
+            await Post.findByIdAndDelete(req.params.id)
+            return res.status(200).json({ msg: "deleted post" })
         } else {
             return res.status(400).json('you are not allowed to delete this post')
         }
@@ -331,7 +332,6 @@ export const deletePost = async (req, res) => {
 }
 export const addProfilepPic = async (req, res) => {
     try {
-        console.log("ff");
         const { userId } = req.body
         let result = await cloudinary.uploader.upload(req.file.path)
         let updatedUser = await User.findByIdAndUpdate(userId,

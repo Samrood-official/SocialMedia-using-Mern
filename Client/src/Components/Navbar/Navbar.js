@@ -55,7 +55,7 @@ const Navbar = () => {
               <img className='rounded-full h-full w-full' src={userData?.profilePic ? userData?.profilePic : ""} alt=''></img>
             </button>
 
-            <button className='hidden md:block w-10 h-10'>
+            <button onClick={()=>navigate(`/profile/${userData._id}`)} className='hidden md:block w-10 h-10'>
               <img className='rounded-full h-full w-full' src={userData?.profilePic ? userData?.profilePic : ""} alt=''></img>
             </button>
             <div className={`absolute top-12 right-0 w-40 bg-white text-center rounded-lg py-2 ${isOpen ? '' : 'hidden'}`}>

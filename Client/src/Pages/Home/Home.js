@@ -6,11 +6,8 @@ import Rightbar from '../../Components/RightpostContainer/Rightbar'
 const Home = () => {
   return (
     <>
-      
       <Navbar />
-      
-
-      <div className='bg-[#efefc8] flex flex-wrap p-8 ' >
+      <div className='bg-[#efefc8] flex flex-wrap md:p-8 ' >
         <div className='hidden md:block w-1/4 p-2 relative'>
           <Leftbar />
         </div>

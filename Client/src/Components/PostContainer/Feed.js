@@ -6,9 +6,9 @@ import { setPosts } from '../../state/userReducer'
 import { getPosts } from '../../utils/constants'
 
 const Feed = () => {
-
     const posts = useSelector((state) => state.posts)
     const token = useSelector((state) => state.token)
+    console.log(posts);
     const dispatch = useDispatch()
 
     const fetchPost =async () => {
@@ -17,7 +17,7 @@ const Feed = () => {
                 'Content-Type': 'multipart/form-data',
                 'Authorization': `Bearer ${token}`
             },
-        })
+        })   
         dispatch(setPosts({posts:posts.data}))
     }
 
@@ -30,14 +30,15 @@ const Feed = () => {
                 posts.map(({
                     _id,
                     desc,
-                    userId,
+                    author,
                     image,
                     likes,
                     comments,
                     createdAt }) => (
                     <Post key={_id}
+                        id={_id}
                         desc={desc}
-                        userId={userId}
+                        author={author}
                         image={image}
                         likes={likes}
                         comments={comments}

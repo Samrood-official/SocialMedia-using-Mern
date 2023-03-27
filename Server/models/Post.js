@@ -1,8 +1,9 @@
 import { Schema, model } from 'mongoose'
 
 const postSchema = Schema({
-    userId:{
+    author:{
         type:Schema.Types.ObjectId,
+        ref:'users',
         required:true
     },
     desc:{

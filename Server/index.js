@@ -8,14 +8,14 @@ dotenv.config()
 import userRouter from './routes/userRoutes.js'
 
 connect(process.env.MONGO_URL).then(() => {
-    console.log("mongoose connected",);
+    console.log("mongoose connected",);    
 }).catch((err) => {
     console.log("mongoose url error", err);
 })
 
 app.use(cors())
 app.use(json())
-app.use(bodyParser.json({ limit: "30mb", extended: true }));
+app.use(bodyParser.json({ limit: "30mb", extended: true }));  
 app.use(bodyParser.urlencoded({ limit: "30mb", extended: true }));
 app.use('/api', userRouter)
 

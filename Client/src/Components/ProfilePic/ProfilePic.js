@@ -24,9 +24,9 @@ const ProfilePic = () => {
                 'Content-Type': 'multipart/form-data'
             }
         })
-        .then((response) => {
-            dispatch(setUserData(response.data))
-            setShowInput(false)
+            .then((response) => {
+                dispatch(setUserData({user:response.data}))
+                setShowInput(false)
             })
             .catch(error => {
                 console.error(error);
@@ -37,10 +37,10 @@ const ProfilePic = () => {
             <div className='h-40 overflow-hidden flex justify-center items-center'>
                 <img className='w-full h-48' src='https://www.nationsonline.org/gallery/Greece/Acropolis-Athens.jpg' alt='' />
             </div>
-            {userData.profilePic ?
+            {userData?.profilePic ?
                 <div className='absolute top-32 left-4'>
-                    <div className='w-24 rounded-full overflow-hidden'>
-                        <img src={userData.profilePic} alt='profile' />
+                    <div className='w-24 rounded-xl shadow-md shadow-gray-600 overflow-hidden'>
+                        <img  src={userData?.profilePic} alt='profile' />
                     </div>
                 </div>
                 :
@@ -51,10 +51,10 @@ const ProfilePic = () => {
             <div onClick={() => setShowInput(true)} className=' absolute top-40 cursor-pointer left-14 flex gap-32'>
                 <label htmlFor='file' className='cursor-pointer'>
                     <CameraIcon />
-                    <input type="file" id='file' onChange={handleImageChange} hidden/>
+                    <input type="file" id='file' onChange={handleImageChange} hidden />
                 </label>
-                {showInput===true &&
-            <button className='font-bold border rounded-lg px-2 py-1 bg-gray-600' onClick={handleSubmit}>Submit</button>
+                {showInput === true &&
+                    <button className='font-bold border rounded-lg px-2 py-1 bg-gray-600' onClick={handleSubmit}>Submit</button>
                 }
             </div>
 

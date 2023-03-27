@@ -9,6 +9,10 @@ const userSchema = Schema({
         type:String,
         required:true
     },
+    bio:{
+        type:String,
+        required:false
+    },
     password:{
         type:String,
         required:true

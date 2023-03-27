@@ -2,24 +2,21 @@ import React, { useState } from 'react'
 import Feed from '../PostContainer/Feed'
 import Card from '../smallComponants/Card'
 import About from './About'
-import { useParams } from 'react-router-dom'
-import { useLocation } from 'react-router-dom'
 import { InfoIcon, PhotoIcon, PostIcon, UserGroupIcon } from '../../icons/icons'
 import Friends from './Friends'
 import Images from './Images'
 import ProfilePic from '../ProfilePic/ProfilePic'
 import { useSelector } from 'react-redux'
+import EditProfile from '../EditProfile/EditProfile'
 const ProfileMainPost = () => {
-  const { id } = useParams()
-  const location = useLocation()
-  const { pathname } = location
-  const userData = useSelector((state)=>state.user)
-  
+  const userData = useSelector((state) => state.user)
+  //editprofile modal
+  const [isModal, setIsModal] = useState(false)
   const [tab, setTab] = useState('posts')
-  const active = 'flex gap-1 px-2 md:px-4 py-1 items-center border-red-600 border-b-4 text-red-500'
-  const nonActive = "flex gap-1 px-2 md:px-4 py-1  items-center"
+  const active = 'transition duration-200 hover:bg-gray-300 rounded flex gap-1 px-2 md:px-4 py-1 items-center border-black border-b-4 text-gray-900'
+  const nonActive = "transition duration-200 hover:bg-gray-300 rounded flex gap-1 px-2 md:px-4 py-1 items-center"
 
-  console.log(pathname);
+ 
   return (
     <>
       <div className='w-full'>
@@ -31,11 +28,18 @@ const ProfileMainPost = () => {
             <div>
               <div className=' ml-32 '>
                 <h1 className=' text-2xl font-semibold capitalize'>
-                  {userData.userName}
+                  {userData?.userName}
                 </h1>
-                <p className='text-gray-500 leading-4'>india, kerala</p>
+                <p className='text-gray-500 leading-4'>{userData?.bio}</p>
               </div>
-              <div className='mt-10 flex gap-0'>
+
+              <div className='flex justify-end mr-4 -mt-6 font-bold '>
+                <div onClick={() => setIsModal(true)} className='bg-[black] text-white cursor-pointer rounded-xl px-3'>Edit Profile</div>
+              </div>
+
+              {isModal &&  <div className='w-full'><EditProfile setIsModal={setIsModal}/></div>}
+
+              <div className='mt-16 flex gap-0 '>
                 <p onClick={() => setTab('posts')} className={tab === "posts" ? active : nonActive}>
                   <PostIcon />
                   Posts

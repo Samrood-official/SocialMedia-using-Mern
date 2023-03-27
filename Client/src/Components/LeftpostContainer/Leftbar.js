@@ -1,25 +1,27 @@
 import React from 'react'
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom'
+import { setLogout } from '../../state/userReducer';
 const Leftbar = () => {
   // Get the user data from the Redux store
   const userData = useSelector((state) => state.user);
   const navigate = useNavigate()
-
+  const dispatch = useDispatch()
+  
   return (
-    <div className=' bg-white sticky left-0 top-36 z-10 shadow-lg shadow-gray-400'>
+    <div className=' bg-white sticky left-0 top-36 z-10  '>
       <div className='p-4'>
         <Link to='/' className='text-xl font-medium block mb-4'>
           {/* My Social Media App */}
         </Link>
-        <div className='flex items-center mb-4'>
+        <div onClick={()=>navigate(`/profile/${userData?._id}`)} className='cursor-pointer flex items-center mb-4'>
           <img
-            src={userData.profilePic ? userData.profilePic : '/default-profile-pic.png'}
+            src={userData?.profilePic ? userData?.profilePic : '/default-profile-pic.png'}
             alt='Profile'
             className='w-12 h-12 rounded-full'
           />
           <div className='ml-2'>
-            <p>{userData.userName}</p>
+            <p>{userData?.userName}</p>
             <p className='text-gray-500 text-sm'>View Profile</p>
           </div>
         </div>
@@ -32,7 +34,7 @@ const Leftbar = () => {
           </Link>
           <Link
             // onClick={()=>navigate(`/profile/${userData._id}`)}
-            to={`/profile/${userData._id}`}
+            to={`/profile/${userData?._id}`}
             className='block py-2 px-4 rounded hover:bg-[#e9e9ae] transition duration-200'
           >
             Profile
@@ -52,12 +54,15 @@ const Leftbar = () => {
         </nav>
       </div>
       <div className='p-4 border-t border-gray-700'>
-        <Link
-          to='/settings'
+        <p
+          onClick={()=>{
+            dispatch(setLogout())
+            navigate('/')
+          }}
           className=' hover:text-gray-400 transition duration-200'
         >
-          Settings
-        </Link>
+          Logout
+        </p>
       </div>
     </div>
   )

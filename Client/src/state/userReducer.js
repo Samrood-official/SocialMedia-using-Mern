@@ -11,12 +11,11 @@ export const userSlice = createSlice({
     initialState,
     reducers:{
         setLogin:(state,action)=>{
-            console.log(action.payload.user);
             state.user = action.payload.user
             state.token= action.payload.accessToken
         },
         setUserData:(state,action)=>{
-            state.user = action.payload
+            state.user = action.payload.user
         },
         setLogout:(state)=>{
             state.user = null
@@ -38,7 +37,8 @@ export const userSlice = createSlice({
                 return post;
             })
             state.posts = updatedPosts
-        }
+        },
+       
     }
 })
 
