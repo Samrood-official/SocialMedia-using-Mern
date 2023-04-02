@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, {useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 import axios from '../../utils/axios'
@@ -8,20 +8,18 @@ import { loginPost } from '../../utils/constants'
 const Login = () => {
     const navigate = useNavigate()
     const dispatch = useDispatch()
-    const [email, setEmail] = useState('')
+    const [userName, setUserName] = useState('')
     const [password, setPassword] = useState('')
 
     const handleLogin = (e) => {
         e.preventDefault()
-        axios.post(loginPost, { email, password }, {
+        axios.post(loginPost, { userName, password }, {
             headers: { "Content-Type": "application/json" },
         }).then((userData) => {
-            console.log("userData");
-            console.log(userData);
             dispatch(setLogin(userData.data))
+            navigate('/')
         }).catch((err) => {
             ((error) => {
-                console.log(err);
                 toast.error(error.response.data.msg, {
                     position: "top-center",
                 });
@@ -29,19 +27,20 @@ const Login = () => {
         })
     }
     return (
-        <div className="flex min-h-full items-center justify-center py-32 px-4 sm:px-6 lg:px-8">
-            <div className="w-full max-w-md space-y-8 ">
+        <div className="flex min-h-screen bg-black items-center justify-around py-32 px-4 sm:px-6 lg:px-8">
+            <div></div>
+            <div className="w-full max-w-md space-y-8 rounded p-2  ">
                 <div>
-                    <img className="mx-auto h-12 w-auto" src="https://st2.depositphotos.com/4398873/9839/i/600/depositphotos_98397934-stock-photo-triangle-geometric-knot-outline-logo.jpg" alt="Your Company" />
-                    <h2 className="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900">Sign in to Social Media</h2>
+                    <img className="h-12 w-auto" src="https://st2.depositphotos.com/4398873/9839/i/600/depositphotos_98397934-stock-photo-triangle-geometric-knot-outline-logo.jpg" alt="Your Company" />
+                    <h2 className=" text-center text-3xl font-bold tracking-tight text-gray-700">Sign in to Social Media</h2>
 
                 </div>
                 <form className="mt-8 space-y-6" onSubmit={(e) => handleLogin(e)}>
 
                     <div className="-space-y-px rounded-md shadow-sm">
                         <div>
-                            <label htmlFor="email-address" className="sr-only">Email address</label>
-                            <input onChange={(e) => setEmail(e.target.value)} id="email-address" name="email" type="email" required className=" pl-3 relative block w-full rounded-t-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-0 sm:text-sm " placeholder="Email address" />
+                            <label htmlFor="user-name" className="sr-only">User Name</label>
+                            <input onChange={(e) => setUserName(e.target.value)} id="user-name" name="userName" type="text" required className=" pl-3 relative block w-full rounded-t-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-0 sm:text-sm " placeholder="Enter UserName" />
                         </div>
                         <div className='pt-5'>
                             <label htmlFor="password" className="sr-only">Password</label>
@@ -49,12 +48,12 @@ const Login = () => {
                         </div>
                     </div>
 
-                    <div className="flex items-center justify-center">
+                    <div>
                         <div className="text-sm justify-between flex ">
-                            <Link to='/register'>
-                                <p className="text-sm px-10">Create new Account ?</p>
+                            <Link to='/register' className='w-1/2'>   
+                                <p className="text-sm text-white px-4 hover:font-bold">Create new Account ?</p>
                             </Link>
-                            <p onClick={()=>navigate('/forgottPassword')} className="font-medium px-10 cursor-pointer text-slate-900 hover:text-indigo-500">Forgot your password?</p>
+                            <p onClick={() => navigate('/forgottPassword')} className="w-1/2  cursor-pointer text-gray-500 hover:font-bold">Forgot your password?</p>
                         </div>
                     </div>
 

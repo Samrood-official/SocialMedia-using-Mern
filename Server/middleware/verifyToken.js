@@ -6,12 +6,12 @@ const verifyToken = (req, res, next) => {
     if (authHeader) {
         const token = authHeader.split(" ")[1];
         Jwt.verify(token, jwt_secret_key, (err, user) => {
-            if (err){ return res.status(403).json("Token is not valid")}
+            if (err) { return res.status(403).json("Token is not valid") }
             req.user = user
             next();
         })
     } else {
-         res.status(401).json("you are not authenticated")
+        res.status(401).json("you are not authenticated")
     }
 }
-export { verifyToken }
+export { verifyToken } 

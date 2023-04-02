@@ -1,53 +1,66 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom'
 import { setLogout } from '../../state/userReducer';
+import { FaUser } from 'react-icons/fa'
+import { persistor } from '../../state/store';
+
 const Leftbar = () => {
   // Get the user data from the Redux store
   const userData = useSelector((state) => state.user);
   const navigate = useNavigate()
   const dispatch = useDispatch()
-  
+  const [hover,setHover]=useState("")
+  const active ="border border-zinc-400  font-bold"
+  const activehover ="border border-zinc-400  "
   return (
-    <div className=' bg-white sticky left-0 top-36 z-10  '>
+    <div className='border rounded-md border-zinc-400 bg-white sticky left-0 top-28 z-10 '>
       <div className='p-4'>
         <Link to='/' className='text-xl font-medium block mb-4'>
           {/* My Social Media App */}
         </Link>
-        <div onClick={()=>navigate(`/profile/${userData?._id}`)} className='cursor-pointer flex items-center mb-4'>
-          <img
-            src={userData?.profilePic ? userData?.profilePic : '/default-profile-pic.png'}
-            alt='Profile'
-            className='w-12 h-12 rounded-full'
-          />
-          <div className='ml-2'>
-            <p>{userData?.userName}</p>
-            <p className='text-gray-500 text-sm'>View Profile</p>
+        <div onClick={() => navigate(`/profile/${userData?._id}`)} className='cursor-pointer flex items-center mb-4'>
+          {userData?.profilePic ?
+            <img
+              src={userData?.profilePic}
+              alt='Profile'
+              className='w-12 h-12 rounded-full'
+            />:
+            <div className='border border-[#3d3f50] w-10 h-10 rounded-full'>
+            <FaUser className='w-full h-full rounded-full'/>
+            </div>
+          }
+          <div className='ml-2 capitalize'>
+            <p>{userData.name}</p>
+            <p className='text-gray-500 text-sm'>{userData?.userName}</p>
           </div>
         </div>
         <nav>
           <Link
             to='/'
-            className='block py-2 px-4 rounded hover:bg-[#e9e9ae] font-bold transition duration-200'
+            onClick={()=>setHover("home")}
+            className={`block py-2 px-4 hover:${activehover} rounded ${hover==="home" ? active: ' '} transition duration-200`}
           >
             Home
           </Link>
           <Link
-            // onClick={()=>navigate(`/profile/${userData._id}`)}
             to={`/profile/${userData?._id}`}
-            className='block py-2 px-4 rounded hover:bg-[#e9e9ae] transition duration-200'
+            onClick={()=>setHover("profile")}
+            className={`block py-2 px-4 hover:${activehover} rounded ${hover==="profile" ? active: ' '} transition duration-200`}
           >
             Profile
           </Link>
           <Link
             to='/notifications'
-            className='block py-2 px-4 rounded hover:bg-[#e9e9ae] transition duration-200'
+            onClick={()=>setHover("notfication")}
+            className={`block py-2 px-4 hover:${activehover} rounded ${hover==="notfication" ? active: ' '}  transition duration-200`}
           >
             Notifications
           </Link>
           <Link
             to='/messages'
-            className='block py-2 px-4 rounded hover:bg-[#e9e9ae] transition duration-200'
+            onClick={()=>setHover("messages")}
+            className={`block py-2 px-4 hover:${activehover} rounded ${hover==="messages" ? active: ' '}  transition duration-200`}
           >
             Messages
           </Link>
@@ -55,11 +68,13 @@ const Leftbar = () => {
       </div>
       <div className='p-4 border-t border-gray-700'>
         <p
-          onClick={()=>{
+          onClick={() => {
+
             dispatch(setLogout())
+            persistor.purge();
             navigate('/')
           }}
-          className=' hover:text-gray-400 transition duration-200'
+          className={` hover:${activehover} ${hover==="logout" ? active: ' '} rounded-md p-2 cursor-pointer transition duration-200`}
         >
           Logout
         </p>

@@ -7,14 +7,14 @@ const Home = () => {
   return (
     <>
       <Navbar />
-      <div className='bg-[#efefc8] flex flex-wrap md:p-8 ' >
-        <div className='hidden md:block w-1/4 p-2 relative'>
+      <div className='bg-[#efefef] flex flex-wrap' >
+        <div className=' hidden md:block w-1/4 p-2 relative '>
           <Leftbar />
         </div>
-        <div className='w-full md:w-2/4 p-2'>
+        <div className='w-full md:w-2/4 p-2 mt-2 '>
           <MainPost />
         </div>
-        <div className="hidden md:block w-1/4 p-2 relative h-auto">
+        <div className="hidden md:block w-1/4 p-2 relative ">
           <Rightbar />
         </div>
       </div>

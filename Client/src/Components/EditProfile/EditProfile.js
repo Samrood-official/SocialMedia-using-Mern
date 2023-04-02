@@ -24,7 +24,7 @@ const EditProfile = ({ setIsModal }) => {
         bio: string()
     })
     const[isSubmitting, setIsSubmitting] = useState(false)
-    const handleSubmit = (values, { setSubmitting, setErrors }) => {
+    const handleSubmit = (values) => {
         setIsSubmitting(true)
       const userId = user._id
       const{userName, email, bio, phoneNumber} = values
@@ -47,7 +47,7 @@ const EditProfile = ({ setIsModal }) => {
     return (
         <>
             <div className="fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-50 z-50">
-                <div className="w-full max-w-md mx-auto mt-16">
+                <div className="w-3/4 md:w-full max-w-md mx-auto mt-16">
                     {/* Modal content */}
                     <div className="bg-white rounded-lg shadow-lg p-6">
                         <h2 className="text-lg font-bold mb-4">Edit Profile</h2>

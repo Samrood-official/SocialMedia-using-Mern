@@ -1,14 +1,3 @@
-// import { configureStore } from '@reduxjs/toolkit'
-// import { userReducer } from './userReducer'
-
-// const store = configureStore({
-//   reducer: {
-//     user: userReducer,
-//   },
-// })
-
-// export default store;
-
 import { configureStore } from '@reduxjs/toolkit'
 import { userSlice } from './userReducer'
 import {
@@ -31,16 +20,15 @@ const persistConfig = {
 
 const persistedReducer = persistReducer(persistConfig, userSlice.reducer)
 
-
 const store = configureStore({
   reducer: persistedReducer,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
-        ignoreActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+        ignoreActions: [FLUSH, REHYDRATE, PAUSE, PURGE, PERSIST, REGISTER],
       },
     }),
 });
   
-export const persistor = persistStore(store)
-export default store;
+export const persistor = persistStore(store)  
+export default store; 

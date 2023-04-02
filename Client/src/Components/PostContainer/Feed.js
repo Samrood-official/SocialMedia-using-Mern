@@ -1,33 +1,44 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import Post from './Post'
 import axios from '../../utils/axios'
 import { useDispatch, useSelector } from 'react-redux'
 import { setPosts } from '../../state/userReducer'
 import { getPosts } from '../../utils/constants'
-
-const Feed = () => {
-    const posts = useSelector((state) => state.posts)
+import { fetchMypost } from '../../state/apiCalls'
+const Feed = ({ isMypost }) => {
+    let posts = useSelector((state) => state.posts)
     const token = useSelector((state) => state.token)
-    console.log(posts);
+    const user = useSelector((state) => state.user)
+    const [loading, setLoading] = useState(false)
+    // const [userPosts, setUserPosts] = useState([])
     const dispatch = useDispatch()
 
-    const fetchPost =async () => {
-        const posts = await axios.get(getPosts, {
+    const fetchPosts = async () => {
+        setLoading(true)
+        const response = await axios.get(getPosts, {
             headers: {
                 'Content-Type': 'multipart/form-data',
                 'Authorization': `Bearer ${token}`
             },
-        })   
-        dispatch(setPosts({posts:posts.data}))
+        })
+        const postData = response.data;
+        dispatch(setPosts({ posts: postData }))
+        setLoading(false)
     }
-
+    if (isMypost) {
+        posts = posts.filter((item) => item?.author?._id === user?._id)
+        console.log(posts);
+    }
     useEffect(() => {
-        fetchPost()
-    },[])
+        fetchPosts()
+    }, [])
+    if (loading) return <div className='bg-white mt-2 rounded p-28 text-3xl font-semibold'>loading..............</div>
+    if (!posts) return null
     return (
         <>
-            {
-                posts.map(({
+            {posts?.length < 1 ? <div className='bg-white mt-2 rounded p-28 text-3xl font-semibold'>No Posts !!</div> :
+
+                posts?.map(({
                     _id,
                     desc,
                     author,
@@ -36,7 +47,7 @@ const Feed = () => {
                     comments,
                     createdAt }) => (
                     <Post key={_id}
-                        id={_id}
+                        postId={_id}
                         desc={desc}
                         author={author}
                         image={image}
@@ -48,6 +59,7 @@ const Feed = () => {
             }
         </>
     )
+
 }
 
 export default Feed

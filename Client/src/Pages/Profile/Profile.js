@@ -7,11 +7,11 @@ const Profile = () => {
   return (
     <>
       <Navbar />
-      <div className='bg-[#efefc8] flex flex-wrap md:px-32' >
-        <div className='hidden md:block md:w-1/4 p-2 '>
+      <div className='bg-[#efefef] flex flex-wrap' >
+        <div className='hidden md:block md:w-1/4 pl-2 relative '>
           <Leftbar />
         </div>
-        <div className='w-full md:w-3/4 p-4 flex flex-wap '>
+        <div className='w-full md:w-3/4 flex flex-wap px-4'>
           <ProfileMainPost />
         </div>
       </div>

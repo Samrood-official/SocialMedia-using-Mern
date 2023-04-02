@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
+import { FaEdit,FaUser,} from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
-import { CameraIcon } from '../../icons/icons';
 import { setUserData } from '../../state/userReducer';
 import axios from '../../utils/axios';
 import { addProfilePic } from '../../utils/constants'
-import Avatar from '../smallComponants/Avatar';
 const ProfilePic = () => {
     const [showInput, setShowInput] = useState(false);
     const [image, setImage] = useState(null);
     const userData = useSelector((state) => state.user)
+    const token = useSelector((state) => state.token)
     const dispatch = useDispatch()
     function handleImageChange(e) {
         const file = e.target.files[0];
@@ -21,11 +21,12 @@ const ProfilePic = () => {
         formData.append('userId', userData._id);
         axios.post(addProfilePic, formData, {
             headers: {
-                'Content-Type': 'multipart/form-data'
+                'Content-Type': 'multipart/form-data',
+                Authorization: `Bearer ${token}`
             }
         })
             .then((response) => {
-                dispatch(setUserData({user:response.data}))
+                dispatch(setUserData({ user: response.data }))
                 setShowInput(false)
             })
             .catch(error => {
@@ -34,31 +35,45 @@ const ProfilePic = () => {
     }
     return (
         <>
-            <div className='h-40 overflow-hidden flex justify-center items-center'>
-                <img className='w-full h-48' src='https://www.nationsonline.org/gallery/Greece/Acropolis-Athens.jpg' alt='' />
-            </div>
-            {userData?.profilePic ?
-                <div className='absolute top-32 left-4'>
-                    <div className='w-24 rounded-xl shadow-md shadow-gray-600 overflow-hidden'>
-                        <img  src={userData?.profilePic} alt='profile' />
+            <div className='flex flex-wrap'>
+                {userData?.profilePic ?
+                    <div className='-mt-24 flex justify-start pl-20'>
+                        <div className='w-40 h-40 rounded-full shadow-md shadow-gray-600 overflow-hidden'>
+                            <img className='w-full h-full rounded-full' src={userData?.profilePic} alt='profile' />
+                        </div>
+                    </div>
+                    :
+                    <div className='-mt-24 flex justify-start pl-20'>
+                        <div className='w-40 h-40  border border-[#3d3f50] bg-white rounded-full'>
+                            <FaUser className='w-full h-full rounded-full' />
+                        </div>
+                    </div>
+                }
+                {/* <div onClick={() => setShowInput(true)}>
+                    <div className="fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-50 z-50">
+                    <div className="w-3/4 md:w-full max-w-md mx-auto mt-16">
+                        <div className="bg-white rounded-lg shadow-lg m-44 p-10">
+                            <h2 className="text-lg font-bold mb-4">Edit Profile</h2>
+                            
+                        </div>
                     </div>
                 </div>
-                :
-                <div className='absolute top-32 left-4'>
-                    <Avatar size={'big'} />
+                    </div> */}
+                <div onClick={() => setShowInput(true)}>
+                    <label htmlFor='file' className='cursor-pointer'>
+                        {/* <CameraIcon /> */}
+                        <div className=' w-8 h-8'>
+                            <FaEdit className='w-full text-[#3d3f50] h-full rounded-full' />
+                        </div>
+                        <input type="file" id='file' onChange={handleImageChange} hidden />
+                    </label>
+                    {showInput === true &&
+
+                        <button className='font-bold border text-white rounded-lg ml-2 px-2 py-1 bg-[#3d3f50]  ' onClick={handleSubmit}>Submit</button>
+                    }
                 </div>
-            }
-            <div onClick={() => setShowInput(true)} className=' absolute top-40 cursor-pointer left-14 flex gap-32'>
-                <label htmlFor='file' className='cursor-pointer'>
-                    <CameraIcon />
-                    <input type="file" id='file' onChange={handleImageChange} hidden />
-                </label>
-                {showInput === true &&
-                    <button className='font-bold border rounded-lg px-2 py-1 bg-gray-600' onClick={handleSubmit}>Submit</button>
-                }
+
             </div>
-
-
         </>
     )
 }

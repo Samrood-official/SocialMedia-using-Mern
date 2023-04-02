@@ -1,42 +1,54 @@
-import {Schema,model} from 'mongoose';
+import mongoose, { Schema, model } from 'mongoose';
 
 const userSchema = Schema({
-    userName:{
-        type:String,
-        required:true
+    name: {
+        type: String,
+        required: true,
     },
-    email:{
-        type:String,
-        required:true
+    userName: {
+        type: String,
+        required: true,
+        unique: true
     },
-    bio:{
-        type:String,
-        required:false
+    email: {
+        type: String,
+        required: true,
+        unique: true
     },
-    password:{
-        type:String,
-        required:true
+    verified: {
+        type: Boolean,
+        default: false,
+        required: true
     },
-    phoneNumber:{
-        type:Number,
+    bio: {
+        type: String,
+        required: false
     },
-    profilePic:{
-        type:String
+    password: {
+        type: String,
+        required: true
     },
-    followings:{
-        type:Array,
+    phoneNumber: {
+        type: Number,
     },
-    follwers:{
-        type:Array
+    profilePic: {
+        type: String
     },
-    profile:{
-        type:String
-    },
-    verified:{
-        type:Boolean,
-        default:false,
-        required:true
+    followings: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'users',
+        }
+    ],
+    followers: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'users',
+        }
+    ],
+    profile: {
+        type: String
     }
 })
 
-export default model("users",userSchema)
+export default model("users", userSchema)

@@ -1,11 +1,15 @@
 import axios from '../../utils/axios'
 import React, { useRef, useState } from 'react'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { ImageIcon } from '../../icons/icons'
 import { addPost } from '../../utils/constants'
+import { FaUser } from 'react-icons/fa'
+import { setPost, setPosts } from '../../state/userReducer'
 const ContentPost = () => {
   const userData = useSelector((state) => state.user)
+  const posts = useSelector((state) => state.posts)
   const desc = useRef()
+  const dispatch = useDispatch()
   const [file, setFile] = useState()
   const handleImageChange = (e) => {
     setFile(e.target.files[0])
@@ -17,21 +21,27 @@ const ContentPost = () => {
     formData.append("userId", userData._id)
     formData.append("desc", desc.current.value)
     try {
-      await axios.post(addPost, formData, {
+      const response = await axios.post(addPost, formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
       })
-      window.location.reload()
+      const post = response.data
+      dispatch(setPosts({posts: [post,...posts] }))
     } catch (err) {
-      
+
     }
   }
   return (
-    <div className='bg-white w-full rounded-md'>
+    <div className='bg-white w-full border border-zinc-400 rounded-md'>
       <form onSubmit={handlePost}>
         <div className='flex p-4 '>
-          <img className='w-14 rounded-full h-14' src={userData.profilePic} alt='' />
+          {userData.profilePic ?
+            <img className='w-14 rounded-full h-14' src={userData.profilePic} alt='' /> :
+            <div className='border border-[#3d3f50] w-14 rounded-full h-14'>
+              <FaUser className='w-full h-full rounded-full' />
+            </div>
+          }
           <div className='pt-3'>
             <input ref={desc} className='pl-4 w-full h-10 focus:outline-none' type='text' placeholder='type....' />
           </div>
