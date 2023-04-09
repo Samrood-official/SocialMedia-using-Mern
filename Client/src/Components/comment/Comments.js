@@ -5,7 +5,7 @@ import { SubmitIcon } from '../../icons/icons'
 import { setPost, setPosts } from '../../state/userReducer'
 import axios from '../../utils/axios'
 const Comments = ({ postId ,comments}) => {
-    let user;
+    const user = useSelector((state)=>state.user);
     const token = useSelector((state) => state.token)
     const [comment, setComment] = useState('')
 
@@ -19,7 +19,6 @@ const Comments = ({ postId ,comments}) => {
         }).then((response)=>{
             dispatch(setPost({posts:response.data}))
             setComment('')
-
         })
     }
     return (

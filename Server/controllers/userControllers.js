@@ -31,6 +31,7 @@ export const followUser = async (req, res) => {
             await user.save()
         }
         const updateduser = await User.findById(id)
+        // const post =await Post.find({author:friendId})
         return res.status(200).json(updateduser)
     } catch (err) {
         console.log(err);
@@ -102,9 +103,9 @@ export const addProfilepPic = async (req, res) => {
 }
 
 //following users
-export const getFollowings = async (req, res) => {
+export const getallfriends = async (req, res) => {
     try {
-        const { id } = req.user
+        const { id } = req.params
         const userfollowDetails = await User.findById(id).populate("followings followers").exec()
         const { followings, followers } = userfollowDetails
 
@@ -116,9 +117,23 @@ export const getFollowings = async (req, res) => {
         return res.status(500).json('internal error occured')
     }
 }
+//getUser
+export const getUser = async (req, res) => {
+    try {
+        const { id } = req.params
+        const user = await User.findById(id).populate('followings followers')
+        if (user) {
+            return res.status(200).json(user)
+        }
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json('internal error occured')
+    }
+}
+
 
 // get all users
-export const getAllUsers = async (req, res) => {
+export const getAllUsers = async (req, res) => { 
     try {
         const { id, userName } = req.user
         const user = await User.findById(id)
@@ -231,5 +246,18 @@ export const removeFollower = async (req, res) => {
     } catch (err) {
         console.log(err);
         return res.status(500).json('internal error occured')
+    }
+}
+
+export const getAllnotification = async (req, res) => {
+    try {
+        const { id } = req.user 
+        const notification = await Notification.find({ user: id }).populate('friend postId').sort({ createdAt: -1 })
+        if (notification) {
+            console.log(notification);
+           return res.status(200).json(notification)
+        }
+    } catch (err) {
+        return res.status(200).json('internal error')
     }
 }

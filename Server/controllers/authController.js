@@ -36,13 +36,13 @@ export const register = async (req, res) => {
             token: otp
         })
         await verificationToken.save()
-        //sending otp to user mail
-        // transport.sendMail({
-        //     from: "socialmedia@gmail.com",
-        //     to: user.email,
-        //     subject: "verify your email using otp",
-        //     html: `<h1>Your Otp Code ${otp}</h1>`
-        // })
+        // sending otp to user mail
+        transport.sendMail({
+            from: "socialmedia@gmail.com",
+            to: user.email,
+            subject: "verify your email using otp",
+            html: `<h1>Your Otp Code ${otp}</h1>`
+        })
 
         return res.status(200).json({
             status: "pending",
@@ -94,6 +94,7 @@ export const verifyEmail = async (req, res) => {
 
         await VerificationToken.findByIdAndDelete(token._id)
         await mainuser.save()
+        console.log(mainuser,"ggggggggggggg")
         const accessToken = Jwt.sign({
             id: userId,
             userName: mainuser.userName
@@ -167,7 +168,7 @@ export const resetPassword = async (req, res) => {
             subject: "your password reset successfull",
             html: `now you can login`
         })
-        return res.status(200).json({ msg: 'check your email to reset password' })
+        return res.status(200).json({ msg: 'you can login now' })
     } catch (err) {
         console.log(err);
         return res.status(500).json('internal error')

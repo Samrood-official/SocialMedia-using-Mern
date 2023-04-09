@@ -4,7 +4,7 @@ import { verifyToken } from '../middleware/verifyToken.js'
 
 import { updatePost, getPost, addPost, fetchPostFollowing, deletePost, commentPost,fetchPosts,fetchAllPosts } from '../controllers/postController.js'
 import { register, login, verifyEmail, resetPassword, forgotPassword } from '../controllers/authController.js'
-import { followUser,removeFollower, unfollowUser, getFollowings, updateUser, deleteUser, likePost, addProfilepPic, getAllUsers } from '../controllers/userControllers.js';
+import { followUser,removeFollower,getAllnotification, getUser, unfollowUser, getallfriends, updateUser, deleteUser, likePost, addProfilepPic, getAllUsers } from '../controllers/userControllers.js';
 
 const router = express.Router()
 
@@ -13,11 +13,13 @@ router.post('/signup', register)
 router.post('/login', login)
 
 router.get('/all-users', verifyToken, getAllUsers)  
-router.get('/get-mypost', verifyToken, getPost)
-router.get('/followings', verifyToken, getFollowings)
+router.get('/get-user/:id', verifyToken, getUser)  
+router.get('/get-mypost/:id', verifyToken, getPost)
+router.get('/getFriends/:id', verifyToken, getallfriends)
 router.get('/user-posts', verifyToken, fetchPosts)
 router.get('/followings-posts', verifyToken, fetchPostFollowing)
-router.get('/all-posts', verifyToken, fetchAllPosts)
+router.get('/all-posts', verifyToken, fetchAllPosts)  
+router.get('/all-notifications', verifyToken, getAllnotification)
 
 router.post('/add-profilepic', upload.single("file"), addProfilepPic)
 router.post('/add-post', upload.single("file"), addPost)

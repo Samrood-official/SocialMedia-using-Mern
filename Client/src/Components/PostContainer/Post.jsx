@@ -9,10 +9,8 @@ import EditPost from './EditPost'
 import Comments from '../comment/Comments'
 import { setDeletePost } from '../../state/userReducer'
 import { likePost } from '../../state/apiCalls'
-// import TimeAgo from 'timeago.js';
-
+import {format} from 'timeago.js'
 const Post = (props) => {
-    // const timeago = new TimeAgo() 
     const {
         postId,
         desc,
@@ -21,22 +19,23 @@ const Post = (props) => {
         likes,
         comments,
         createdAt } = props;
-
+        
         const [showComment, setShowComment] = useState(false)
         const [showMenu, setShowMenu] = useState(false)
-        const [editPostModal, setEditPostModal] = useState(false)
-        const user = useSelector((state) => state.user)
-        const token = useSelector((state) => state.token)
-        const dispatch = useDispatch()
-        const userLiked = likes && likes[user._id];
-        const likeCount = Object.keys(likes).length
+    const [editPostModal, setEditPostModal] = useState(false)
+    const user = useSelector((state) => state.user)
+    const token = useSelector((state) => state.token)
+    const dispatch = useDispatch()
+    const userLiked = likes && likes[user._id];
+    const likeCount = Object.keys(likes).length
+    // const timeago = new TimeAgo()
     const PatchLike = () => {
-      likePost(token, postId,dispatch)
+        likePost(token, postId, dispatch)
     }
-
+    
     const HandleShowComment = () => {
         setShowComment(!showComment)
-    }
+    } 
 
     const handleDeletePost = async () => {
         try {
@@ -66,11 +65,10 @@ const Post = (props) => {
                             }
                             <div>
                                 <p className='pl-4 font-bold'>{author?.userName}</p>
-                                <p className='pl-4  text-sm'>{author?.name}</p>
-                                {/* <p>{timeago.format(createdAt)}</p> */}
+                                <p className='pl-2 text-sm'>{format(createdAt)}</p>
                             </div>
                         </div>
-
+                            {user._id === author._id &&
                         <div className='relative'>
                             <div className='block w-10 h-10 cursor-pointer ' onClick={() => setShowMenu(true)}>
                                 <MenuIcon />
@@ -82,11 +80,12 @@ const Post = (props) => {
                                 </div>
                             }
                         </div>
+                            }
 
                         {/* modal */}
                         {editPostModal &&
                             <div>
-                                <EditPost setShowMenu={setShowMenu} postId={postId} setEditPostModal={setEditPostModal} />
+                                <EditPost desc={desc} setShowMenu={setShowMenu} postId={postId} setEditPostModal={setEditPostModal} />
                             </div>
                         }
                     </div>

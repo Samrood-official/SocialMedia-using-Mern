@@ -20,14 +20,17 @@ const ContentPost = () => {
     formData.append("file", file)
     formData.append("userId", userData._id)
     formData.append("desc", desc.current.value)
+    console.log(desc.current.value);
     try {
-      const response = await axios.post(addPost, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      })
-      const post = response.data
-      dispatch(setPosts({posts: [post,...posts] }))
+      if (desc.current.value != "") {
+        const response = await axios.post(addPost, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        })
+        const post = response.data
+        dispatch(setPosts({ posts: [post, ...posts] }))
+      }
     } catch (err) {
 
     }

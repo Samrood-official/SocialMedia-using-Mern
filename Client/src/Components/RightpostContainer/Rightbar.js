@@ -16,7 +16,6 @@ const Rightbar = () => {
         Authorization: `Bearer ${token}`
       }
     }).then((response)=>{
-     
       dispatch(setAllUsers({users:response.data.data}))
     }).catch((err)=>{
       console.log(err); 

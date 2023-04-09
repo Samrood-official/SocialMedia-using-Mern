@@ -37,8 +37,6 @@ export const userSlice = createSlice({
             state.allPosts = action.payload.posts
         },
         setPost: (state, action) => {
-            console.log("action.payload.posts===>(");
-            console.log(action.payload.posts);
             const updatedPosts = state.posts.map((post) => {
                 if (post?._id === action.payload.posts._id) return action.payload.posts;
                 return post;

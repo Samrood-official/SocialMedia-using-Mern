@@ -9,10 +9,10 @@ import { setPost } from '../../state/userReducer';
 
 
 
-const EditPost = ({ setEditPostModal,postId ,setShowMenu}) => {
+const EditPost = ({ setEditPostModal,postId ,setShowMenu,desc}) => {
 
   const token = useSelector((state) => state.token)
-  const [content, setContent] = useState("")
+  const [content, setContent] = useState(desc)
   const dispatch = useDispatch()
 
   const handleEditPost =async (e) => {
@@ -44,12 +44,12 @@ const EditPost = ({ setEditPostModal,postId ,setShowMenu}) => {
 
             <form >
               <label>Content</label>
-              <input onChange={(e) => setContent(e.target.value)} className="w-full p-3 bg-slate-100 outline-none" type="text" name='content' />
+              <input onChange={(e) => setContent(e.target.value)} value={content} className="w-full rounded-md border border-zinc-400 p-3 outline-none" type="text" name='content' />
 
-              <button type='submit' onClick={handleEditPost} className="bg-gray-500 mr-2 my-2 text-white  py-2 px-4 rounded">
+              <button type='submit' onClick={handleEditPost} className="border border-zinc-500 mr-2 my-2  py-2 px-4 rounded">
                 Submit
               </button>
-              <button onClick={() => setEditPostModal(false)} type="button" className="bg-gray-400  text-white  py-3 px-4 rounded">
+              <button onClick={() => setEditPostModal(false)} type="button" className="border border-zinc-500  py-3 px-4 rounded">
                 <FaArrowLeft />
               </button>
             </form>

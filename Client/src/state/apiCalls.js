@@ -1,4 +1,4 @@
-import { addFollow, getMyPosts, unfollow, unFriend } from "../utils/constants";
+import { addFollow, allUsers, getMyPosts, notification, profileUser, unfollow, unFriend } from "../utils/constants";
 import { setPost, setUserData } from "./userReducer";
 import axios from "../utils/axios";
 
@@ -51,9 +51,9 @@ export const handleRemoveFollower = async (unfriendId, token, setFollowerStat, d
     }
 }
 
-export const fetchMypost = async (token) => {
+export const fetchMypost = async (token,profileId) => {
 
-    const response = await axios.get(getMyPosts, {
+    const response = await axios.get(`${getMyPosts}/${profileId}`, {
         headers: {
             'Authorization': `Bearer ${token}`
         },
@@ -64,16 +64,50 @@ export const fetchMypost = async (token) => {
 
 export const likePost = async (token, postId, dispatch) => {
     try {
-        const response =await axios.put(`/api/posts/${postId}/like`,{},{
+        const response = await axios.put(`/api/posts/${postId}/like`, {}, {
             headers: {
                 Authorization: `Bearer ${token}`
             },
         })
         const data = response.data
-        dispatch(setPost({posts:data}))
+        dispatch(setPost({ posts: data }))
 
     } catch (err) {
         console.log(err);
     }
 
+}
+
+export const getAllusers = async (token) => {
+    try {
+        const users = await axios.get(allUsers, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        })
+        return users.data.data;
+    } catch (err) {
+
+    }
+}
+export const getProfileUser = async (token,profileId) => {
+    try {
+        const user = await axios.get(`${profileUser}/${profileId}`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        })
+        console.log(user.data);
+        return user.data;
+    } catch (err) {
+
+    }
+}
+export const getNotifications =async (token)=>{
+   const response = await axios.get(notification,{
+        headers:{
+            'Authorization' :`Barear ${token}`
+        }
+    })
+    return response.data
 }

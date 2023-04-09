@@ -58,7 +58,7 @@ const Leftbar = () => {
             Notifications
           </Link>
           <Link
-            to='/messages'
+            to='/chat'
             onClick={()=>setHover("messages")}
             className={`block py-2 px-4 hover:${activehover} rounded ${hover==="messages" ? active: ' '}  transition duration-200`}
           >

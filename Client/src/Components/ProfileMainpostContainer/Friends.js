@@ -1,5 +1,5 @@
 import UserCard from './UserCard'
-const Friends = ({ type, data, callFriend, setCallFriend }) => {
+const Friends = ({ type, data, render, forceRender }) => {
   return (
     <>
       <div className='w-100'>
@@ -9,7 +9,7 @@ const Friends = ({ type, data, callFriend, setCallFriend }) => {
         {data.length < 1 ? <div className='bg-white mt-2 rounded p-28 text-3xl font-semibold'>No {type} !!</div> :
 
           data.map((item) => (
-            <UserCard type={type} callFriend={callFriend} setCallFriend={setCallFriend}  key={item._id} name={item.name} userName={item.userName} profilePic={item.profilePic} id={item._id} />
+            <UserCard type={type} render={render} forceRender={forceRender}  key={item._id} name={item.name} userName={item.userName} profilePic={item.profilePic} id={item._id} />
           ))
         }
       </div>

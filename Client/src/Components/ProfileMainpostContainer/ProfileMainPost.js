@@ -1,16 +1,20 @@
+import { getFrieds } from '../../utils/constants'
+import { useParams } from 'react-router-dom'
+import { PhotoIcon, PostIcon, UserGroupIcon } from '../../icons/icons'
+import { useSelector } from 'react-redux'
+import { fetchMypost, getProfileUser } from '../../state/apiCalls'
 import React, { useEffect, useState } from 'react'
 import Feed from '../PostContainer/Feed'
 import Card from '../smallComponants/Card'
-import About from './About'
-import { InfoIcon, PhotoIcon, PostIcon, UserGroupIcon } from '../../icons/icons'
 import Friends from './Friends'
 import Images from './Images'
 import ProfilePic from '../ProfilePic/ProfilePic'
-import { useSelector } from 'react-redux'
 import EditProfile from '../EditProfile/EditProfile'
 import axios from '../../utils/axios'
-import { getFrieds } from '../../utils/constants'
+
 const ProfileMainPost = () => {
+  const params = useParams()
+  const profileId = params.id
   const userData = useSelector((state) => state.user)
   //editprofile modal
   const [isModal, setIsModal] = useState(false)
@@ -21,10 +25,14 @@ const ProfileMainPost = () => {
   // followings followers
   const [followings, setFollowings] = useState([])
   const [followers, setFollowers] = useState([])
-  const [callFriend,setCallFriend] = useState(false)
-   const token = useSelector((state) => state.token)
+  const [posts, setPosts] = useState([])
+  const [profileUser, setProfileUser] = useState([])
+  const [render, forceRender] = useState(false)
+  const token = useSelector((state) => state.token)
+
+
   const getFollowers = () => {
-    axios.get(getFrieds, {
+    axios.get(`${getFrieds}/${profileId}`, {
       headers: {
         'Authorization': `Bearer ${token}`
       },
@@ -33,10 +41,20 @@ const ProfileMainPost = () => {
       setFollowers(response.data.followers)
     })
   }
+  const fetchProfileUser = async () => {
+    const profileUser = await getProfileUser(token, profileId)
+    setProfileUser(profileUser)
+  }
   useEffect(() => {
     getFollowers()
-  }, [callFriend])
+    fetchImages()
+    fetchProfileUser()
+  }, [render])
 
+  const fetchImages = async () => {
+    const response = await fetchMypost(token, profileId)
+    setPosts(response)
+  }
   return (
     <>
       <div className='w-full border-x border-zinc-400 mt-4'>
@@ -48,46 +66,44 @@ const ProfileMainPost = () => {
             </div>
             <div className=' border-b-2 border-[#3d3f50]'>
               <>
-                <ProfilePic />
+                <ProfilePic profilePic={profileUser.profilePic} profileId={profileId} />
                 <div className='ml-24'>
                   <h1 className=' text-2xl font-semibold capitalize'>
-                    {userData?.userName}
+                    {profileUser?.userName}
                   </h1 >
                   <div className='flex flex-wrapjustify-self-auto w-32'>
-                    <p className='text-gray-500 w-full leading-4'>{userData?.bio}</p>
+                    <p className='text-gray-500 w-full leading-4'>{profileUser?.bio}</p>
                   </div>
                 </div>
-                <div className='flex justify-end mr-4 -mt-3 font-bold '>
-                  <div onClick={() => setIsModal(true)} className='border border-[#3d3f50] mb-2 text-md cursor-pointer rounded-md px-1'>Edit Profile</div>
-                </div>
+                {userData._id === profileId &&
+                  <div className='flex justify-end mr-4 -mt-3 font-bold '>
+                    <div onClick={() => setIsModal(true)} className='border border-[#3d3f50] mb-2 text-md cursor-pointer rounded-md px-1'>
+                      Edit Profile</div>
+                  </div>
+                }
                 {isModal && <div className=' w-full'><EditProfile setIsModal={setIsModal} /></div>}
               </>
             </div>
             <div>
 
               <div className=' flex gap-0 '>
-                <p onMouseOver={() => setTab('posts')} className={tab === "posts" ? active : nonActive}>
-                  <PostIcon />
-                  Posts
+                <p onClick={() => setTab('posts')} className={tab === "posts" ? active : nonActive}>
+                  <PostIcon /> Posts
                 </p>
-                <p onMouseOver={() => setTab('images')} className={tab === "images" ? active : nonActive}>
+                <p onClick={() => setTab('images')} className={tab === "images" ? active : nonActive}>
                   <PhotoIcon />
-                  Photos
+                  Photos</p>
+                <p onClick={() => setTab('followings')} className={tab === "followings" ? active : nonActive}>
+                  <UserGroupIcon />Followings </p>
+                <p onClick={() => setTab('followers')} className={tab === "followers" ? active : nonActive}>
+                  <UserGroupIcon /> Followers
                 </p>
-                <p onMouseOver={() => setTab('followings')} className={tab === "followings" ? active : nonActive}>
-                  <UserGroupIcon />
-                  Followings
-                </p>
-                <p onMouseOver={() => setTab('followers')} className={tab === "followers" ? active : nonActive}>
-                  <InfoIcon />
-                  Followers
-                </p>
-
               </div>
-              {tab === "followings" && <Friends  data={followings} type={"followings"} />}
-              {tab === "posts" && <Feed isMypost={true}/>}
-              {tab === "followers" && <Friends setCallFriend={setCallFriend} callFriend={callFriend} data={followers} type={"followers"} />}
-              {tab === "images" && <Images />}
+
+              {tab === "followings" && <Friends data={followings} type={"followings"} />}
+              {tab === "posts" && <Feed Profileposts={posts} profileId={profileId} isMypost={true} />}
+              {tab === "followers" && <Friends forceRender={forceRender} render={render} data={followers} type={"followers"} />}
+              {tab === "images" && <Images post={posts} />}
             </div>
           </div>
         </Card>

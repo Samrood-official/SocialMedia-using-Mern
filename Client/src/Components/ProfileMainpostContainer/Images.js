@@ -1,18 +1,12 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
-import { fetchMypost } from '../../state/apiCalls'
 import Card from '../smallComponants/Card'
-const Images = () => {
+const Images = ({post}) => {
   const token = useSelector((state) => state.token)
 const [posts, setPosts] = useState([])
-  const fetchImages =async () => {
-    const response =await fetchMypost(token)
-    console.log(response);
-    setPosts(response)
-  }
-  useState(() => {
-    fetchImages()
-  },[])
+  useEffect(()=>{
+    setPosts(post)
+  },[posts])
   return (
 
     <div>

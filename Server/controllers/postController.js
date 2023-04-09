@@ -7,12 +7,12 @@ export const updatePost = async (req, res) => {
     try {
         const { id } = req.params
         const { content } = req.body
-        let post = await Post.findById(id)
+        let post = await Post.findById(id).populate('author comments.author')
         if (!post) return res.status(400).json({ msg: 'post not found' })
         post = await Post.findByIdAndUpdate(id, { $set: { desc: content } }, { new: true })
-        let updatedpost = await post.save()
-        console.log("updatedpost");
-        console.log(updatedpost);
+        await post.save()
+        let updatedpost = await Post.findById(id).populate('author comments.author')
+
         return res.status(200).json(updatedpost)
     } catch (err) {
         console.log(err);
@@ -36,7 +36,8 @@ export const addPost = async (req, res) => {
             author: userId
         })
         const post = await newPost.save()
-        res.status(200).json(post)
+        const updatedpost = await Post.findById(post._id).populate("author")
+        res.status(200).json(updatedpost)
     } catch (err) {
         console.log(err);
         return res.status(500).json({ msg: "internal error occured" })
@@ -46,7 +47,10 @@ export const addPost = async (req, res) => {
 //user posts
 export const getPost = async (req, res) => {
     try {
-        const mypost = await Post.find({ author: req.user.id }).populate("author comments.author")
+        console.log("dd");
+        console.log(req.user.id === req.params.id)
+        const { id } = req.params
+        const mypost = await Post.find({ author: id }).populate("author comments.author")
         if (!mypost) {
             return res.status(400).json({ msg: "you dont have any post" })
         }
@@ -112,16 +116,19 @@ export const commentPost = async (req, res) => {
         }
         const post = await Post.findById(postId)
         post.comments.unshift(Comment)
-        const updatedpost = await post.save()
-        const notification = new Notification({
-            type: 'comment',
-            user: post.author,
-            friend: id,
-            content: 'commented on your post',
-            postId: postId
-        })
-        const updatedNotification = await notification.save()
-        console.log(updatedNotification);
+        await post.save()
+        const updatedpost = await Post.findById(postId).populate('author comments.author')
+        console.log(post.author !== id);
+        if (post.author !== id) {
+            const notification = new Notification({
+                type: 'comment',
+                user: post.author,
+                friend: id,
+                content: 'commented on your post',
+                postId: postId
+            })
+            await notification.save()
+        }
         return res.status(200).json(updatedpost)
     } catch (err) {
         console.log(err);

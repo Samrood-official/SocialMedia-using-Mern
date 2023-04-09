@@ -15,11 +15,10 @@ import storage from 'redux-persist/lib/storage' // defaults to localStorage for 
 const persistConfig = {
   key: 'root',
   storage,
-  version:1
+  version: 1
 }
 
 const persistedReducer = persistReducer(persistConfig, userSlice.reducer)
-
 const store = configureStore({
   reducer: persistedReducer,
   middleware: (getDefaultMiddleware) =>
@@ -29,6 +28,6 @@ const store = configureStore({
       },
     }),
 });
-  
-export const persistor = persistStore(store)  
+
+export const persistor = persistStore(store)
 export default store; 
