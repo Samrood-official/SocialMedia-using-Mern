@@ -68,10 +68,10 @@ export const fetchPostFollowing = async (req, res) => {
         if (!user) return res.status(400).json('user not found')
         const posts = await Promise.all(
             user.followings.map((item) => {
-                return Post.find({ author: item }).populate('author').populate('comments.author').sort({ createdAt: -1 })
+                return Post.find({ author: item ,isDeleted:false}).populate('author').populate('comments.author').sort({ createdAt: -1 })
             }))
         const flattenPost = posts.flat()
-        const userPost = await Post.find({ author: id }).populate("author").populate('comments.author').sort({ createdAt: -1 })
+        const userPost = await Post.find({ author: id, isDeleted:false }).populate("author").populate('comments.author').sort({ createdAt: -1 })
         const combinedPost = userPost.concat(flattenPost)
         return res.status(200).json(combinedPost)
     } catch (err) {
@@ -84,7 +84,7 @@ export const fetchAllPosts = async (req, res) => {
         const { id } = req.user
         const user = await User.findById(id)
         if (!user) return res.status(400).json('user not found')
-        const posts = await Post.find().populate('author').populate('comments.author userName profilePc')
+        const posts = await Post.find({isDeleted:false}).populate('author').populate('comments.author userName profilePc')
         return res.status(200).json(posts)
     } catch (err) {
         console.log(err);

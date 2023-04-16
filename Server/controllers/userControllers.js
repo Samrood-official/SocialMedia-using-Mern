@@ -132,8 +132,8 @@ export const getUser = async (req, res) => {
 }
 
 
-// get all users
-export const getAllUsers = async (req, res) => { 
+// get all users without following
+export const getAllUsersWithOutFollowing = async (req, res) => { 
     try {
         const { id, userName } = req.user
         const user = await User.findById(id)
@@ -150,12 +150,24 @@ export const getAllUsers = async (req, res) => {
         return res.status(500).json('internal error occured')
     }
 }
+// get all users
+export const getAllUsers = async (req, res) => { 
+    try {
+        const { id, userName } = req.user
+        const allusers = await User.find().select('userName profilePic name')
+        
+            return res.status(200).json({ data: allusers })
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json('internal error occured')
+    }
+}
 
 export const deleteUser = async (req, res) => {
     try {
         if (req.params.id !== req.user.id) {
             return res.status(400).json("user dosn't match")
-        }
+        } 
         await User.findByIdAndDelete(req.params.id)
         return res.status(200).json('deleted account successfully')
     } catch (err) {
@@ -166,7 +178,7 @@ export const deleteUser = async (req, res) => {
 
 export const likePost = async (req, res) => {
     try {
-        const { id, userName } = req.user
+        const { id } = req.user
         const { postId } = req.params
         const post = await Post.findById(postId)
         if (!post) return res.status(400).json('post not found')
@@ -178,6 +190,9 @@ export const likePost = async (req, res) => {
         } else {
             post.likes.set(id, true)
 
+           const check =  post.author != id
+           console.log(check);
+           if(check){
             const notification = new Notification({
                 type: 'like',
                 user: post.author,
@@ -187,35 +202,15 @@ export const likePost = async (req, res) => {
             })
             await notification.save()
         }
-        const updatedPost = await post.save()
-        console.log(updatedPost);
+        }
+        await post.save()
+        const updatedPost = await Post.findById(postId).populate('author comments.author')
         return res.status(200).json(updatedPost)
     } catch (err) {
         console.log(err);
         return res.status(500).json('internal error occured')
     }
 }
-
-// export const likePost = async (req, res) => {
-//     try {
-//         const post = await findById(req.params.id)
-//         if (!post.like.includes(req.params.id)) {
-//             await updateOne({ id: req.params.id }, {
-//                 $push: { like: req.body.user }
-//             })
-//             return res.status(200).json('post has been liked')
-//         } else {
-//             await post.updateOne({ id: req.param.id }, {
-//                 $pull: { like: req.body.user }
-//             })
-//             return res.status(200).json('Post hasbeen unliked')
-//         }
-//     } catch (err) {
-//         console.log(err);
-//         return res.status(500).json('internal error occured')
-//     }
-// }
-
 export const removeFollower = async (req, res) => {
     try {
         console.log("fff");
@@ -238,7 +233,7 @@ export const removeFollower = async (req, res) => {
             if (index > -1) {
                 user.followers.splice(index, 1);
             }
-            await user.save()
+            await user.save()   
         }
         const updateduser = await User.findById(id)
         console.log(updateduser);

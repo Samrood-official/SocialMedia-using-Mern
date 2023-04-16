@@ -20,7 +20,6 @@ const ContentPost = () => {
     formData.append("file", file)
     formData.append("userId", userData._id)
     formData.append("desc", desc.current.value)
-    console.log(desc.current.value);
     try {
       if (desc.current.value != "") {
         const response = await axios.post(addPost, formData, {
@@ -29,6 +28,8 @@ const ContentPost = () => {
           }
         })
         const post = response.data
+        desc.current.value = ""
+        setFile(null)
         dispatch(setPosts({ posts: [post, ...posts] }))
       }
     } catch (err) {
@@ -36,7 +37,7 @@ const ContentPost = () => {
     }
   }
   return (
-    <div className='bg-white w-full border border-zinc-400 rounded-md'>
+    <div className='bg-white w-full shadow-md rounded-md'>
       <form onSubmit={handlePost}>
         <div className='flex p-4 '>
           {userData.profilePic ?
@@ -61,7 +62,7 @@ const ContentPost = () => {
 
           </div>
           <div className='mr-3'>
-            <button type='submit' className=' text-black border text-lg border-gray-700 rounded-md w-20'>Post</button>
+            <button type='submit' className='h-8 cursor-pointer text-lg text-white bg-[#02abc5] rounded w-20'>Post</button>
           </div>
         </div>
       </form>

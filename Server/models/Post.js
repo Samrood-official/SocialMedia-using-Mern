@@ -29,13 +29,17 @@ const postSchema = Schema({
         },
         createdAt: {
             type: Date,
-            default: Date.now
+            default: Date.now()
         },
         isDelete: {
             type: Boolean,
             default: false
         }
     }],
+    isDeleted: {
+        type: Boolean,
+        default: false
+    }
 
 }, { timestamps: true })
 

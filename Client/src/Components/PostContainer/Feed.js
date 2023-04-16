@@ -4,7 +4,6 @@ import axios from '../../utils/axios'
 import { useDispatch, useSelector } from 'react-redux'
 import { setPosts } from '../../state/userReducer'
 import { getPosts } from '../../utils/constants'
-import { fetchMypost } from '../../state/apiCalls'
 const Feed = ({ isMypost, socket, Profileposts, profileId }) => {
     let posts = useSelector((state) => state.posts)
     const token = useSelector((state) => state.token)

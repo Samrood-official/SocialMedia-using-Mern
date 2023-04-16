@@ -1,5 +1,7 @@
+import dotenv from 'dotenv'
+dotenv.config()
 import Jwt from 'jsonwebtoken';
-const jwt_secret_key = "mywebtoken"
+const jwt_secret_key = process.env.jwt_secret_key
 
 const verifyToken = (req, res, next) => {
     const authHeader = req.header("Authorization")
@@ -14,4 +16,4 @@ const verifyToken = (req, res, next) => {
         res.status(401).json("you are not authenticated")
     }
 }
-export { verifyToken } 
+export { verifyToken }  

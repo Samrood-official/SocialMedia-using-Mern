@@ -1,4 +1,4 @@
-import { addFollow, allUsers, getMyPosts, notification, profileUser, unfollow, unFriend } from "../utils/constants";
+import { addFollow, suggessions, getMyPosts, notification, profileUser, unfollow, unFriend, allUsers } from "../utils/constants";
 import { setPost, setUserData } from "./userReducer";
 import axios from "../utils/axios";
 
@@ -51,7 +51,7 @@ export const handleRemoveFollower = async (unfriendId, token, setFollowerStat, d
     }
 }
 
-export const fetchMypost = async (token,profileId) => {
+export const fetchMypost = async (token, profileId) => {
 
     const response = await axios.get(`${getMyPosts}/${profileId}`, {
         headers: {
@@ -90,7 +90,7 @@ export const getAllusers = async (token) => {
 
     }
 }
-export const getProfileUser = async (token,profileId) => {
+export const getProfileUser = async (token, profileId) => {
     try {
         const user = await axios.get(`${profileUser}/${profileId}`, {
             headers: {
@@ -103,10 +103,28 @@ export const getProfileUser = async (token,profileId) => {
 
     }
 }
-export const getNotifications =async (token)=>{
-   const response = await axios.get(notification,{
-        headers:{
-            'Authorization' :`Barear ${token}`
+export const getNotifications = async (token) => {
+    const response = await axios.get(notification, {
+        headers: {
+            'Authorization': `Barear ${token}`
+        }
+    })
+    return response.data
+}
+export const getUser = async (token, friendId) => {
+    const response = await axios.get(`/api/get-user/${friendId}`, {
+        headers: {
+            "Authorization": `Barear ${token}`
+        }
+    })
+    return response.data
+}
+
+export const addChat = async (token, firstId, secondId) => {
+    
+    const response = await axios.post(`/api/chats`,{firstId,secondId}, {
+        headers: {
+            "Authorization": `Barear ${token}`
         }
     })
     return response.data

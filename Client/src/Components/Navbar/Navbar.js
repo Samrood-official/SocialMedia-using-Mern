@@ -5,7 +5,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { BellIcon, ChatIcon, SearchIcon } from '../../icons/icons'
 import { getAllusers } from '../../state/apiCalls'
 import { setLogout } from '../../state/userReducer'
-const Navbar = ({ socket }) => {
+const Navbar = () => {
   const userData = useSelector((state) => state.user)
   const token = useSelector((state) => state.token)
   const [searchitem, setSearchItem] = useState("")
@@ -19,9 +19,9 @@ const Navbar = ({ socket }) => {
   useEffect(() => {
     allusers()
   }, [])
- const handleSearch = (e)=>{
-console.log(e.target.value)
-setSearchItem(e.target.value)
+  const handleSearch = (e) => {
+    console.log(e.target.value)
+    setSearchItem(e.target.value)
   }
   const dispatch = useDispatch()
   const navigate = useNavigate()
@@ -42,18 +42,17 @@ setSearchItem(e.target.value)
       return user?.userName?.toLowerCase().includes(searchitem) && user._id !== userData._id
     })
     setFilterUsers(users)
-  }, [searchitem ])
+  }, [searchitem])
   return (
     <>
-      {/* <User></User> */}
-      <nav className='sticky top-0 z-20 w-full bg-white flex  justify-between h-24 items-center py-3 px-5 shadow-md'>
+      <nav className='sticky top-0 z-20 w-full bg-[#02abc5] flex  justify-between h-16 items-center py-3 px-5 shadow-md'>
         <div className='flex item-center space-x-5'>
           <i className='fa-solid fa-bars'></i>
-          <h1 className='text-3xl  italic from-neutral-700'>Social</h1>
+          <h1 className='text-3xl text-white italic from-neutral-700'>Social</h1>
         </div>
-        <div className='hidden relative sm:block w-auto border border-black bg-black  rounded md:flex item-center space-x-5'>
-          <input onChange={handleSearch} value={searchitem} className='w-full focus:outline-none py-2 px-5 text-gray ' type='text' placeholder='search....' />
-          <ul className="absolute z-100 top-10 bottom-0 right-0  w-full bg-gray-100 rounded-md shadow-md mt-1 divide-y divide-gray-200">
+        <div className='hidden relative xs:block border rounded sm:flex item-center space-x-5'>
+          <input onChange={handleSearch} value={searchitem} className='w-full focus:outline-none py-2 px-5 text-gray ' type='text' placeholder='Search......' />
+          <ul className="absolute z-100 top-10 bottom-0 right-0  w-full rounded-md shadow-md mt-1 divide-y divide-gray-200">
             {filterUsers.length > 0 && searchitem !== "" ? filterUsers.map((user) => (
               <li key={user._id} className="bg-white cursor-pointer flex">
                 <div className='border p-1 flex w-full hover:bg-gray-100'>
@@ -64,10 +63,10 @@ setSearchItem(e.target.value)
                     </div>
                   }
                   <Link to={`/othersprofile/${user._id}`}>
-                  <div  className='px-2'>
-                    <p>{user.userName}</p>
-                    <p className='-mt-1'>{user.name}</p>
-                  </div>
+                    <div className='px-2'>
+                      <p>{user.userName}</p>
+                      <p className='-mt-1'>{user.name}</p>
+                    </div>
                   </Link>
                 </div>
               </li>
@@ -90,27 +89,28 @@ setSearchItem(e.target.value)
           </div>
 
           {userData &&
-            <p className=" px-3 py-3 capitalize rounded-md text-sm font-bold">{userData?.userName}</p>
+            <p className=" px-3 py-3 text-white rounded-md text-sm font-bold">{userData?.userName}</p>
           }
 
           <div className='relative'>
             {userData.profilePic ?
               <button className='block w-12 h-12 md:hidden' onClick={toggleMenu}>
                 <img className='rounded-full h-full w-full' src={userData?.profilePic ? userData?.profilePic : ""} alt=''></img>
-              </button> : <div onClick={toggleMenu} className='block md:hidden border-zinc-400 border w-10 h-10 rounded-full'>
+              </button> : <div onClick={toggleMenu} className='block md:hidden border bg-white w-10 h-10 rounded-full'>
                 <FaUser className='w-full h-full rounded-full' /> </div>}
             {userData.profilePic ?
               <button onClick={() => navigate(`/profile/${userData._id}`)} className='hidden md:block w-12 h-12'>
                 <img className='rounded-full h-full w-full' src={userData?.profilePic ? userData?.profilePic : ""} alt=''></img>
-              </button> : <div className='hidden md:block  border border-[#3d3f50] w-10 h-10 rounded-full'>
+              </button> : <div className='hidden md:block  border bg-white border-[#fffff] w-10 h-10 rounded-full'>
                 <FaUser className='w-full h-full rounded-full' /> </div>}
-
-            <div className={`absolute top-12 right-0 w-40 bg-white text-center rounded-lg py-2 ${isOpen ? '' : 'hidden'}`}>
-              {userData ? <p onClick={handleLogout} className='py-2 rounded hover:bg-gray-700 hover:text-white transition duration-200'>Logout</p> :
-                <p onClick={() => navigate('/login')} className='py-2rounded hover:bg-gray-700 hover:text-white transition duration-200'>Login</p>
+            <div className={`absolute top-12 right-0 w-52 justify-start bg-white text-center border border-zinc-400 rounded-lg py-2 ${isOpen ? '' : 'hidden'}`}>
+              <p onClick={() => navigate(`/`)} className='m-2 hover:text-white hover:bg-[#02abc5] py-2 rounded transition duration-200'>Home</p>
+              <p onClick={() => navigate(`/profile/${userData._id}`)} className='py-2 rounded m-2 hover:text-white hover:bg-[#02abc5] transition duration-200'>Profile</p>
+              <p onClick={() => navigate('/chat')} className='py-2 rounded m-2 hover:text-white hover:bg-[#02abc5] transition duration-200'>Messages</p>
+              <p onClick={() => navigate('/notifications')} className='py-2 rounded m-2 hover:text-white hover:bg-[#02abc5] transition duration-200'>Notification</p>
+              {userData ? <p onClick={handleLogout} className='py-2 rounded m-2 hover:text-white hover:bg-[#02abc5] transition duration-200'>Logout</p> :
+                <p onClick={() => navigate('/login')} className='py-2rounded m-2 hover:text-white hover:bg-[#02abc5] transition duration-200'>Login</p>
               }
-              <p onClick={() => navigate(`/profile/${userData._id}`)} className='py-2 rounded hover:bg-gray-700 hover:text-white transition duration-200'>Profile</p>
-              <p className='py-2 rounded hover:bg-gray-700 hover:text-white transition duration-200'>Settings</p>
             </div>
           </div>
           {/* {userData && <p className='p-3 font-bold'>{userData.userName}</p>} */}
@@ -118,7 +118,7 @@ setSearchItem(e.target.value)
       </nav>
       {/* search bar for small scree  n */}
       <div className='relative sm:hidden flex w-full bg-[#efefef] p-2 item-center '>
-        <input className='w-full border border-black focus:outline-none py-2 px-5  text-gray rounded-l-md' type='text' placeholder='search....' />
+        <input className='w-full border border-black focus:outline-none py-2 px-5  text-gray rounded-l' type='text' placeholder='search....' />
         <div className=' relative border-black bg-black cursor-pointer py-2 px-5  rounded-r-md'>
           <SearchIcon />
           <ul className="absolute hidden z-40 top-10 w-96 right-20  bg-gray-100 rounded-md shadow-md mt-1 border border-gray-200 divide-y divide-gray-200">

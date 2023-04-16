@@ -19,7 +19,7 @@ const ProfileMainPost = () => {
   //editprofile modal
   const [isModal, setIsModal] = useState(false)
   const [tab, setTab] = useState('posts')
-  const active = 'transition duration-200 hover:bg-zinc-300 rounded flex gap-1 px-2 md:px-4 py-1 items-center border-black border-b text-red-500'
+  const active = 'transition duration-200 hover:bg-zinc-300 rounded flex gap-1 px-2 md:px-4 py-1 items-center border-black border-b text-blue-600'
   const nonActive = "transition duration-200 hover:bg-gray-300 rounded flex gap-1 px-2 md:px-4 py-1 items-center"
 
   // followings followers
@@ -57,10 +57,10 @@ const ProfileMainPost = () => {
   }
   return (
     <>
-      <div className='w-full border-x border-zinc-400 mt-4'>
-        <Card noPadding={false} className="bg-white rounded mb-5">
+      <div className='w-full mt-4'>
+        <Card noPadding={false} className="bg-white mb-5">
           <div>
-            <div className='h-44 bg-[#c6c6c6] mx-1'>
+            <div className='h-44 bg-[#02abc5] mx-1'>
               {/* <img className='w-full h-48' src='https://www.nationsonline.org/gallery/Greece/Acropolis-Athens.jpg' alt='' /> */}
               <div className=' w-full h-full'> </div>
             </div>
@@ -77,7 +77,7 @@ const ProfileMainPost = () => {
                 </div>
                 {userData._id === profileId &&
                   <div className='flex justify-end mr-4 -mt-3 font-bold '>
-                    <div onClick={() => setIsModal(true)} className='border border-[#3d3f50] mb-2 text-md cursor-pointer rounded-md px-1'>
+                    <div onClick={() => setIsModal(true)} className='bg-[#02abc5] mb-2 text-white cursor-pointer rounded-md px-2 py-1'>
                       Edit Profile</div>
                   </div>
                 }

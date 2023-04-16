@@ -8,33 +8,36 @@ const Notification = () => {
     const token = useSelector((state) => state.token)
     const [notification, setNotification] = useState([])
 
-    const fetchNotification = async () => {
-        const response = await getNotifications(token)
-        console.log(response);
-        setNotification(response)
-    }
     useEffect(() => {
+        const fetchNotification = async () => {
+            const response = await getNotifications(token)
+            console.log(response);
+            setNotification(response)
+        }
+
         fetchNotification()
-    },[])
+    },[token])
     return (
         <>
             <Navbar />
-            <div className='bg-[#efefef] flex flex-wrap' >
+            <div className='bg-[#efefef] flex flex-wrap pt-8' >
                 <div className=' hidden md:block w-1/4 p-2 relative '>
                     <Leftbar />
                 </div>
-                <div className='w-full md:w-3/4 p-2 mt-2 '>
-                    <div className="bg-gray-100 rounded-md shadow-md max-w-lg ">
-                        <div className="p-4">
+                <div className=' p-2 mt-2 w-full md:w-3/4 '>
+                    <div className="bg-white rounded-md shadow-md  ">
+                        <div className="pt-4 pl-4">
                             <p>Notifications</p>
                         </div>
-                        <div className='h-72 overflow-scroll overflow scrollbar-hide'> 
+                        <div className='p-4 h-screen overflow-scroll overflow scrollbar-hide'> 
 
-                        {notification.length !== 0 ? notification.map(({type, user, friend, content, postId,createdAt})=>(
+                        {notification.length !== 0 ? notification.map(({type, user, friend, content, postId,createdAt},index)=>(
+                            <React.Fragment  key={index}>
                         <Notificationlist type={type} createdAt={createdAt} user={user} friend={friend} content={content} post={postId}/>
+                        </React.Fragment>
                         )):<div className='p-28 text-2xl font-semibold'>No Notifications</div>
                         }
-                        </div>  
+                        </div>   
                     </div>
                 </div>
 

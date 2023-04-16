@@ -50,26 +50,26 @@ const FriendInfo = ({ id, userName, profilePic, name }) => {
     }
   }
   return (
-    <div className='flex gap-2 shadow-md shadow-gray-400 p-2 justify-between'>
+    <div className='flex gap-2 border rounded-lg p-2 justify-between'>
       <div className='flex'>
         {profilePic ? <div className='rounded-full overflow-hidden '>
-          <img className='w-14 h-14' src={profilePic} alt="" /></div> :
-          <div className='border border-[#3d3f50] w-10 h-10 rounded-full'>
+          <img className='w-12 h-12' src={profilePic} alt="" /></div> :
+          <div className='border border-[#3d3f50] w-12 h-12 rounded-full'>
             <FaUser className='w-full h-full rounded-full' />
           </div>
         }
         <div className=' pl-2'>
-          <h3 className='text-gray-500 text-sm text-center'>{name}</h3>
+          <h3 className='font-semibold'>{name}</h3>
           <div className='text-sm'>{userName}</div>
         </div>
       </div>
 
       <div className='pr-3 py-auto '>
         {!Following && user.followers.includes(id) &&
-          (<button className= 'rounded-md bg-black my-2 px-3 py-1 text-white' onClick={() => handleFollow(id)}>Follow back</button>)}
+          (<button className= 'rounded-md bg-[#02abc5] my-2 px-3 py-1 text-white' onClick={() => handleFollow(id)}>Follow back</button>)}
         {!Following && !user.followers.includes(id) &&
-          (<button className='rounded-md bg-black my-2 px-3 py-1 text-white' onClick={() => handleFollow(id)}>Follow</button>)}
-        {Following && (<button className='rounded-md bg-black my-2 px-3 py-1 text-white' onClick={() => handleUnFollow(id)}>Following</button>)}
+          (<button className='rounded-md bg-[#02abc5] my-2 px-3 py-1 text-white' onClick={() => handleFollow(id)}>Follow</button>)}
+        {Following && (<button className='rounded-md bg-[#02abc5] my-2 px-3 py-1 text-white' onClick={() => handleUnFollow(id)}>Following</button>)}
       
       </div>
     </div>

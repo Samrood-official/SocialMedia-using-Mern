@@ -9,7 +9,7 @@ import EditPost from './EditPost'
 import Comments from '../comment/Comments'
 import { setDeletePost } from '../../state/userReducer'
 import { likePost } from '../../state/apiCalls'
-import {format} from 'timeago.js'
+import { format } from 'timeago.js'
 const Post = (props) => {
     const {
         postId,
@@ -19,23 +19,22 @@ const Post = (props) => {
         likes,
         comments,
         createdAt } = props;
-        
-        const [showComment, setShowComment] = useState(false)
-        const [showMenu, setShowMenu] = useState(false)
+
+    const [showComment, setShowComment] = useState(false)
+    const [showMenu, setShowMenu] = useState(false)
     const [editPostModal, setEditPostModal] = useState(false)
     const user = useSelector((state) => state.user)
     const token = useSelector((state) => state.token)
     const dispatch = useDispatch()
     const userLiked = likes && likes[user._id];
     const likeCount = Object.keys(likes).length
-    // const timeago = new TimeAgo()
     const PatchLike = () => {
         likePost(token, postId, dispatch)
     }
-    
+
     const HandleShowComment = () => {
         setShowComment(!showComment)
-    } 
+    }
 
     const handleDeletePost = async () => {
         try {
@@ -52,10 +51,10 @@ const Post = (props) => {
         }
     }
     return (
-        <div className='mt-6 border rounded-md border-zinc-400'>
-            <div className='bg-white '>
-                <div className='px-2 py-1'>
-                    <div className='justify-between p-4 flex border  border-zinc-400'>
+        <div className='mt-6 shadow-md  '>
+            <div className='bg-white rounded-lg'>
+                <div className='p-2'>
+                    <div className='justify-between p-4 border-b-2 flex'>
                         <div className=' flex '>
                             {author?.profilePic ?
                                 <img className='w-10 rounded-full h-10' src={author?.profilePic} alt='' /> :
@@ -68,19 +67,19 @@ const Post = (props) => {
                                 <p className='pl-2 text-sm'>{format(createdAt)}</p>
                             </div>
                         </div>
-                            {user._id === author._id &&
-                        <div className='relative'>
-                            <div className='block w-10 h-10 cursor-pointer ' onClick={() => setShowMenu(true)}>
-                                <MenuIcon />
-                            </div>
-                            {showMenu &&
-                                <div className="absolute border p-2  border-zinc-400 top-8  right-8 w-28 bg-white text-center rounded-lg py-2">
-                                    <p onClick={() => handleDeletePost()} className='py-2 rounded hover:border hover:border-zinc-400  transition duration-200'>Delete</p>
-                                    <p onClick={() => setEditPostModal(true)} className='py-2 rounded hover:border hover:border-zinc-400  transition duration-200'>Edit</p>
+                        {user._id === author._id &&
+                            <div className='relative'>
+                                <div className='block w-10 h-10 cursor-pointer ' onClick={() => setShowMenu(true)}>
+                                    <MenuIcon />
                                 </div>
-                            }
-                        </div>
-                            }
+                                {showMenu &&
+                                    <div className="absolute border p-2  border-zinc-400 top-8  right-8 w-28 bg-white text-center rounded-lg py-2">
+                                        <p onClick={() => handleDeletePost()} className='py-2 rounded hover:text-white hover:bg-[#02abc5]  transition duration-200'>Delete</p>
+                                        <p onClick={() => setEditPostModal(true)} className='py-2 rounded hover:text-white hover:bg-[#02abc5]  transition duration-200'>Edit</p>
+                                    </div>
+                                }
+                            </div>
+                        }
 
                         {/* modal */}
                         {editPostModal &&
@@ -113,9 +112,9 @@ const Post = (props) => {
                             <p className='px-1 '>{comments?.length}</p>
                         </div>
                     </div>
-                    <div className='ml-auto mr-5 pt-4'>
+                    {/* <div className='ml-auto mr-5 pt-4'>
                         <ShareIcon />
-                    </div>
+                    </div> */}
                 </div>
                 {showComment && <Comments comments={comments} postId={postId} />}
             </div>

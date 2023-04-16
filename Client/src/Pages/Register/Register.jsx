@@ -56,7 +56,7 @@ const Register = () => {
         })
     }
     return (
-        <div className="flex bg-black h-full  justify-around py-14 sm:px-6 lg:px-8">
+        <div className="flex bg-[#02abc5] min-h-screen  justify-around py-14 sm:px-6 lg:px-8">
             <div></div>
             <div className="w-full max-w-md space-y-8 p-3 rounded">
                 <div>

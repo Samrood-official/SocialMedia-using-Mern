@@ -26,7 +26,7 @@ const userSchema = Schema({
     },
     password: {
         type: String,
-        required: true
+        // required: true
     },
     phoneNumber: {
         type: Number,
@@ -48,6 +48,14 @@ const userSchema = Schema({
     ],
     profile: {
         type: String
+    },
+    isBlocked:{
+        type:Boolean,
+        default:false
+    },
+    createdAt:{
+        type:Date,
+        default:Date.now()
     }
 })
 

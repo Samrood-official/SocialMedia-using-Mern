@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { FaUser } from 'react-icons/fa'
 import { useDispatch, useSelector } from 'react-redux'
 import { SubmitIcon } from '../../icons/icons'
-import { setPost, setPosts } from '../../state/userReducer'
+import { setPost } from '../../state/userReducer'
 import axios from '../../utils/axios'
 const Comments = ({ postId ,comments}) => {
     const user = useSelector((state)=>state.user);

@@ -3,6 +3,7 @@ import { FaUser } from 'react-icons/fa'
 import { useDispatch, useSelector } from 'react-redux'
 import { handleFollow, handleUnFollow, handleRemoveFollower } from '../../state/apiCalls'
 import { useNavigate } from 'react-router-dom'
+import { setUserData } from '../../state/userReducer'
 const UserCard = ({ name, userName, profilePic, id, type, forceRender, render }) => {
     const token = useSelector((state) => state.token)
     const dispatch = useDispatch()
@@ -11,8 +12,8 @@ const UserCard = ({ name, userName, profilePic, id, type, forceRender, render })
     const [followerStat, setFollowerStat] = useState("remove")
     const user = useSelector((state) => state.user)
     const removeFolllower = async () => {
-         await handleRemoveFollower(id, token, setFollowerStat, dispatch)
-        //    dispatch(setUserData({user:response}))
+       const response =  await handleRemoveFollower(id, token, setFollowerStat, dispatch)
+           dispatch(setUserData({user:response}))
         forceRender(!render)
         setFollowerStat('removed')
     }
@@ -29,7 +30,7 @@ const UserCard = ({ name, userName, profilePic, id, type, forceRender, render })
                     <h3 className="text-gray-900 font-semibold text-lg text-center mt-4">{name}</h3>
                     <p className="text-gray-500 text-sm text-center">{userName}</p>
 
-                    <button onClick={removeFolllower} className=" h-8 text-red-700 font-bold rounded-md px-3 mx-4 ">
+                    <button onClick={removeFolllower} className=" h-8 text-blue-400 font-bold rounded-md px-3 mx-4 ">
                         {followerStat}
                     </button>
                 </div>
@@ -50,11 +51,11 @@ const UserCard = ({ name, userName, profilePic, id, type, forceRender, render })
                     <p className="text-gray-500 text-sm text-center">{userName}</p>
 
                     {status === 'following' &&
-                        <button onClick={() => handleUnFollow(id, token, setStatus, dispatch)} className=" h-8 text-red-700 font-bold rounded-md px-3 mx-4 ">
+                        <button onClick={() => handleUnFollow(id, token, setStatus, dispatch)} className=" h-8 text-blue-400 font-bold rounded-md px-3 mx-4 ">
                             {status}
                         </button>}
                     {status === 'follow' &&
-                        <button onClick={() => handleFollow(id, token, setStatus, dispatch)} className=" h-8 text-red-700 font-bold rounded-md px-3 mx-4 ">
+                        <button onClick={() => handleFollow(id, token, setStatus, dispatch)} className=" h-8 text-blue-400 font-bold rounded-md px-3 mx-4 ">
                             {status}
                         </button>}
                 </div>

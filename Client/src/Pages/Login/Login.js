@@ -1,15 +1,17 @@
-import React, {useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 import axios from '../../utils/axios'
 import { setLogin } from '../../state/userReducer'
 import toast, { Toaster } from 'react-hot-toast';
-import { loginPost } from '../../utils/constants'
+import { googleLogin, loginPost } from '../../utils/constants'
+import { GoogleLogin } from '@react-oauth/google'
 const Login = () => {
     const navigate = useNavigate()
     const dispatch = useDispatch()
     const [userName, setUserName] = useState('')
     const [password, setPassword] = useState('')
+    const [user, setUser] = useState(null)
 
     const handleLogin = (e) => {
         e.preventDefault()
@@ -26,8 +28,31 @@ const Login = () => {
             })(err);
         })
     }
+    const responseMessage = (response) => {
+        console.log(response);
+        setUser(response.credential)
+    };
+    const errorMessage = (error) => {
+        console.log(error);
+    };
+    useEffect(() => {
+        if (user) {
+            const getUser =async ()=>{
+                const response = await axios.get(googleLogin,{
+                    headers: {
+                        "Authorization": `barear ${user}`
+                    }
+                })
+                console.log(response);
+                dispatch(setLogin(response.data))
+                navigate('/')
+            }
+            getUser();
+        }
+    }, [user])
+
     return (
-        <div className="flex min-h-screen bg-black items-center justify-around py-32 px-4 sm:px-6 lg:px-8">
+        <div className="flex min-h-screen bg-[#02abc5] items-center justify-around py-32 px-4 sm:px-6 lg:px-8">
             <div></div>
             <div className="w-full max-w-md space-y-8 rounded p-2  ">
                 <div>
@@ -37,7 +62,7 @@ const Login = () => {
                 </div>
                 <form className="mt-8 space-y-6" onSubmit={(e) => handleLogin(e)}>
 
-                    <div className="-space-y-px rounded-md shadow-sm">
+                    <div className="-space-y-px rounded-md shadow-sm">    
                         <div>
                             <label htmlFor="user-name" className="sr-only">User Name</label>
                             <input onChange={(e) => setUserName(e.target.value)} id="user-name" name="userName" type="text" required className=" pl-3 relative block w-full rounded-t-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-0 sm:text-sm " placeholder="Enter UserName" />
@@ -50,13 +75,13 @@ const Login = () => {
 
                     <div>
                         <div className="text-sm justify-between flex ">
-                            <Link to='/register' className='w-1/2'>   
+                            <Link to='/register' className='w-1/2'>
                                 <p className="text-sm text-white px-4 hover:font-bold">Create new Account ?</p>
                             </Link>
                             <p onClick={() => navigate('/forgottPassword')} className="w-1/2  cursor-pointer text-gray-500 hover:font-bold">Forgot your password?</p>
                         </div>
                     </div>
-
+                    <GoogleLogin onSuccess={responseMessage} onError={errorMessage} />
                     <div>
                         <button type='submit' className="group relative flex w-full justify-center rounded-md bg-slate-800 py-2 px-3 text-sm font-semibold text-white hover:bg-gray-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
                             <span className="absolute inset-y-0 left-0 flex items-center pl-3">

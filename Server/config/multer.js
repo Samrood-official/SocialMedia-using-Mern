@@ -15,13 +15,6 @@ const storage = multer.diskStorage({
       return cb(new Error('Only .png, .jpg and .jpeg format allowed!'));
     }
   }
-  // fileFilter(req, file, cb) {
-  //   if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
-  //     return cb(new Error('Please upload a valid image file'))
-  //   }
-  //   cb(undefined, true)
-  // }
 });
 const upload = multer({ storage });
-
-export default upload;      
+export default upload;
