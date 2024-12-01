@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react'
-import { FaUser } from 'react-icons/fa'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link, useNavigate } from 'react-router-dom'
-import { BellIcon, ChatIcon, SearchIcon } from '../../icons/icons'
+import { BellIcon, ChatIcon, imageUrl, SearchIcon } from '../../icons/icons'
 import { getAllusers } from '../../state/apiCalls'
 import { setLogout } from '../../state/userReducer'
 const Navbar = () => {
@@ -15,12 +14,10 @@ const Navbar = () => {
     const users = await getAllusers(token)
     setAllusers(users)
   }
-  console.log(allUsers);
   useEffect(() => {
     allusers()
   }, [])
   const handleSearch = (e) => {
-    console.log(e.target.value)
     setSearchItem(e.target.value)
   }
   const dispatch = useDispatch()
@@ -45,7 +42,7 @@ const Navbar = () => {
   }, [searchitem])
   return (
     <>
-      <nav className='sticky top-0 z-20 w-full bg-[#02abc5] flex  justify-between h-16 items-center py-3 px-5 shadow-md'>
+      <nav className='sticky box-border top-0 z-20 w-full bg-[#02abc5] flex  justify-between h-[64px] items-center px-5 shadow-md'>
         <div className='flex item-center space-x-5'>
           <i className='fa-solid fa-bars'></i>
           <h1 className='text-3xl text-white italic from-neutral-700'>Social</h1>
@@ -58,11 +55,13 @@ const Navbar = () => {
                 <div className='border p-1 flex w-full hover:bg-gray-100'>
                   {user.profilePic ?
                     <img className=' w-10 h-10 rounded-full' src={user.profilePic} /> :
-                    <div className='block border-zinc-400 border w-10 h-10 rounded-full'>
-                      <FaUser className='w-full h-full rounded-full' />
+                    <div className='block w-10 h-10 '>
+                      <img src={imageUrl} className='rounded-full h-full w-full' />
                     </div>
                   }
-                  <Link to={`/othersprofile/${user._id}`}>
+                  <Link to={`/othersprofile/${user._id}`}
+                    onClick={() => setSearchItem("")}
+                  >
                     <div className='px-2'>
                       <p>{user.userName}</p>
                       <p className='-mt-1'>{user.name}</p>
@@ -93,16 +92,23 @@ const Navbar = () => {
           }
 
           <div className='relative'>
-            {userData.profilePic ?
+            {userData?.profilePic ?
               <button className='block w-12 h-12 md:hidden' onClick={toggleMenu}>
                 <img className='rounded-full h-full w-full' src={userData?.profilePic ? userData?.profilePic : ""} alt=''></img>
-              </button> : <div onClick={toggleMenu} className='block md:hidden border bg-white w-10 h-10 rounded-full'>
-                <FaUser className='w-full h-full rounded-full' /> </div>}
-            {userData.profilePic ?
+              </button> : 
+                 <div onClick={toggleMenu} className='block md:hidden w-10 h-10 '>
+                 <img src={imageUrl} className='rounded-full h-full w-full' />
+               </div>
+                }
+            {userData?.profilePic ?
               <button onClick={() => navigate(`/profile/${userData._id}`)} className='hidden md:block w-12 h-12'>
                 <img className='rounded-full h-full w-full' src={userData?.profilePic ? userData?.profilePic : ""} alt=''></img>
-              </button> : <div className='hidden md:block  border bg-white border-[#fffff] w-10 h-10 rounded-full'>
-                <FaUser className='w-full h-full rounded-full' /> </div>}
+              </button> :
+
+              <div className='hidden md:block w-10 h-10 '>
+                <img src={imageUrl} className='rounded-full h-full w-full' />
+              </div>
+            }
             <div className={`absolute top-12 right-0 w-52 justify-start bg-white text-center border border-zinc-400 rounded-lg py-2 ${isOpen ? '' : 'hidden'}`}>
               <p onClick={() => navigate(`/`)} className='m-2 hover:text-white hover:bg-[#02abc5] py-2 rounded transition duration-200'>Home</p>
               <p onClick={() => navigate(`/profile/${userData._id}`)} className='py-2 rounded m-2 hover:text-white hover:bg-[#02abc5] transition duration-200'>Profile</p>
@@ -116,18 +122,36 @@ const Navbar = () => {
           {/* {userData && <p className='p-3 font-bold'>{userData.userName}</p>} */}
         </div>
       </nav>
-      {/* search bar for small scree  n */}
-      <div className='relative sm:hidden flex w-full bg-[#efefef] p-2 item-center '>
-        <input className='w-full border border-black focus:outline-none py-2 px-5  text-gray rounded-l' type='text' placeholder='search....' />
-        <div className=' relative border-black bg-black cursor-pointer py-2 px-5  rounded-r-md'>
-          <SearchIcon />
-          <ul className="absolute hidden z-40 top-10 w-96 right-20  bg-gray-100 rounded-md shadow-md mt-1 border border-gray-200 divide-y divide-gray-200">
-            <li className="px-3 py-2 hover:bg-gray-100 bg-white  cursor-pointer">Result 1</li>
-            <li className="px-3 py-2 hover:bg-gray-100 bg-white cursor-pointer">Result 2</li>
-            <li className="px-3 py-2 hover:bg-gray-100 bg-white cursor-pointer">Result 3</li>
-          </ul>
+
+      {/* search bar for small screen */}
+      {window.location.pathname !== "/chat" &&
+        <div className='relative sm:hidden flex w-full bg-[#efefef] p-2 item-center '>
+          <input onChange={handleSearch} value={searchitem} className='w-full border border-black focus:outline-none py-2 px-5  text-gray rounded-l' type='text' placeholder='search....' />
+          <div className=' relative border-black bg-[#02abc5] cursor-pointer py-2 px-5  rounded-r-md'>
+            <SearchIcon />
+            <ul className="absolute z-40 top-10 left-[-300px] w-auto right-20  bg-gray-100 rounded-md shadow-md mt-1 border border-gray-200 divide-y divide-gray-200">
+              {filterUsers.length > 0 && searchitem !== "" ? filterUsers.map((user) => (
+                <li key={user._id} className="bg-white cursor-pointer flex">
+                  <div className='border p-1 flex w-full hover:bg-gray-100'>
+                    {user.profilePic ?
+                      <img className=' w-10 h-10 rounded-full' src={user.profilePic} /> :
+                      <div className='block w-10 h-10 '>
+                        <img src={imageUrl} className='rounded-full h-full w-full' />
+                      </div>
+                    }
+                    <Link to={`/othersprofile/${user._id}`}>
+                      <div className='px-2'>
+                        <p>{user.userName}</p>
+                        <p className='-mt-1'>{user.name}</p>
+                      </div>
+                    </Link>
+                  </div>
+                </li>
+              )) : ""}
+            </ul>
+          </div>
         </div>
-      </div>
+      }
     </>
   )
 }

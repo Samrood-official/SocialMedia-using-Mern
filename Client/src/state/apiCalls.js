@@ -1,6 +1,7 @@
-import { addFollow, suggessions, getMyPosts, notification, profileUser, unfollow, unFriend, allUsers } from "../utils/constants";
-import { setPost, setUserData } from "./userReducer";
+import { addFollow, getMyPosts, notification, profileUser, unfollow, unFriend, allUsers } from "../utils/constants";
+import { setChat, setConversation, setCurrentChat, setPost, setUserData } from "./userReducer";
 import axios from "../utils/axios";
+import { Navigate, useNavigate } from "react-router-dom";
 
 export const handleFollow = async (friendId, token, setStatus, dispatch) => {
     try {
@@ -97,7 +98,6 @@ export const getProfileUser = async (token, profileId) => {
                 Authorization: `Bearer ${token}`
             }
         })
-        console.log(user.data);
         return user.data;
     } catch (err) {
 
@@ -121,11 +121,24 @@ export const getUser = async (token, friendId) => {
 }
 
 export const addChat = async (token, firstId, secondId) => {
-    
-    const response = await axios.post(`/api/chats`,{firstId,secondId}, {
+
+    const response = await axios.post(`/api/chats`, { firstId, secondId }, {
         headers: {
             "Authorization": `Barear ${token}`
         }
     })
     return response.data
+}
+export const handleChat = async (token, userId, friendId, conversation,chat, dispatch) => {
+    const response = await addChat(token, userId, friendId)
+    if (!response.chatExist) {
+        let res = [...conversation, response.chat]
+        dispatch(setConversation(res))
+        dispatch(setCurrentChat(response.chat))
+    }
+    else {
+        dispatch(setCurrentChat(response.chat))
+    }
+    dispatch(setChat({showContact:"hidden",showMessage:"block"}))
+    return;
 }

@@ -1,8 +1,8 @@
-import { getFrieds } from '../../utils/constants'
-import { useParams } from 'react-router-dom'
+import { addFollow, getFrieds, unfollow } from '../../utils/constants'
+import { useNavigate, useParams } from 'react-router-dom'
 import { PhotoIcon, PostIcon, UserGroupIcon } from '../../icons/icons'
-import { useSelector } from 'react-redux'
-import { fetchMypost, getProfileUser } from '../../state/apiCalls'
+import { useDispatch, useSelector } from 'react-redux'
+import { fetchMypost, getProfileUser, handleChat } from '../../state/apiCalls'
 import React, { useEffect, useState } from 'react'
 import Feed from '../PostContainer/Feed'
 import Card from '../smallComponants/Card'
@@ -11,11 +11,13 @@ import Images from './Images'
 import ProfilePic from '../ProfilePic/ProfilePic'
 import EditProfile from '../EditProfile/EditProfile'
 import axios from '../../utils/axios'
+import { setUserData } from '../../state/userReducer'
 
 const ProfileMainPost = () => {
   const params = useParams()
   const profileId = params.id
   const userData = useSelector((state) => state.user)
+  const chat = useSelector((state) => state.chat)
   //editprofile modal
   const [isModal, setIsModal] = useState(false)
   const [tab, setTab] = useState('posts')
@@ -29,8 +31,9 @@ const ProfileMainPost = () => {
   const [profileUser, setProfileUser] = useState([])
   const [render, forceRender] = useState(false)
   const token = useSelector((state) => state.token)
-
-
+  const user = useSelector((state) => state.user)
+  const conversation = useSelector((state) => state.conversation)
+const navigate = useNavigate()
   const getFollowers = () => {
     axios.get(`${getFrieds}/${profileId}`, {
       headers: {
@@ -46,37 +49,92 @@ const ProfileMainPost = () => {
     setProfileUser(profileUser)
   }
   useEffect(() => {
-    getFollowers()
+    getFollowers()    
     fetchImages()
     fetchProfileUser()
   }, [render])
 
   const fetchImages = async () => {
+    console.log("🚀 ~ fetchImages ~ fetchImages:")
     const response = await fetchMypost(token, profileId)
     setPosts(response)
   }
+
+  const [Following, setFollowing] = useState(false)
+  const dispatch = useDispatch()
+  useState(() => {
+    setFollowing(user.followings.includes(profileId))
+  }, [])
+  //profile follow
+  const handleFollow = async (friendId) => {
+    try {
+      const response = await axios.put(addFollow, { friendId }, {
+        headers: {
+          "Content-Type": "application/json",
+          'Authorization': `Barear ${token}`
+        }
+      })
+      const updatedUserData = response.data
+      setFollowing(true)
+      dispatch(setUserData({ user: updatedUserData }))
+    } catch (err) {
+      console.log("error occurred while handling follow");
+    }
+  }
+
+  const handleUnFollow = async (friendId) => {
+    try {
+      axios.put(unfollow, { unfollowid: friendId }, {
+        headers: {
+          'Authorization': `Barear ${token}`
+        }
+      }).then((response) => {
+        const updatedUserData = response.data
+        dispatch(setUserData({ user: updatedUserData }))
+        setFollowing(false)
+      })
+    } catch (err) {
+      console.log("error occurred while handling unfollow");
+    }
+  }
+
   return (
     <>
-      <div className='w-full mt-4'>
+      <div className='w-full mt-4 h-screen'>
         <Card noPadding={false} className="bg-white mb-5">
           <div>
             <div className='h-44 bg-[#02abc5] mx-1'>
-              {/* <img className='w-full h-48' src='https://www.nationsonline.org/gallery/Greece/Acropolis-Athens.jpg' alt='' /> */}
               <div className=' w-full h-full'> </div>
             </div>
             <div className=' border-b-2 border-[#3d3f50]'>
               <>
-                <ProfilePic profilePic={profileUser.profilePic} profileId={profileId} />
-                <div className='ml-24'>
-                  <h1 className=' text-2xl font-semibold capitalize'>
+                <ProfilePic profilePic={profileUser?.profilePic} profileId={profileId} />
+                <div className='mx-24 flex flex-col' >
+                  <h1 className='text-2xl font-semibold px-2 '>
                     {profileUser?.userName}
-                  </h1 >
-                  <div className='flex flex-wrapjustify-self-auto w-32'>
-                    <p className='text-gray-500 w-full leading-4'>{profileUser?.bio}</p>
+                  </h1>
+                  {userData._id !== profileId &&
+                  <div className='flex'>
+                    <div className='pr-3'>
+                      {!Following && user.followers.includes(profileId) &&
+                        (<button className='rounded-md bg-slate-300 my-2 px-3 py-1' onClick={() => handleFollow(profileId)}>Follow back</button>)}
+                      {!Following && !user.followers.includes(profileId) &&
+                        (<button className='rounded-md bg-slate-300 my-2 px-3 py-1' onClick={() => handleFollow(profileId)}>Follow</button>)}
+                      {Following && (<button className='rounded-md bg-slate-300 my-2 px-3 py-1' onClick={() => handleUnFollow(profileId)}>Following</button>)}
+                    </div>
+                    <button className='rounded-md bg-slate-300 my-2 px-3 py-1' onClick={()=>{handleChat(token,userData._id,profileId,conversation,chat,dispatch).then(()=>navigate('/chat'))}}>message</button>
+                    </div>
+                  }
+                </div>
+                <div className='px-2'>
+                  <div className='text-gray-500 w-32 sm:w-auto box-content'>
+                    <p className='whitespace-normal text-green-500 break-words'>
+                      {user.bio}
+                    </p>
                   </div>
                 </div>
                 {userData._id === profileId &&
-                  <div className='flex justify-end mr-4 -mt-3 font-bold '>
+                  <div className='flex justify-end mr-4 mt-3 font-bold '>
                     <div onClick={() => setIsModal(true)} className='bg-[#02abc5] mb-2 text-white cursor-pointer rounded-md px-2 py-1'>
                       Edit Profile</div>
                   </div>
@@ -84,26 +142,30 @@ const ProfileMainPost = () => {
                 {isModal && <div className=' w-full'><EditProfile setIsModal={setIsModal} /></div>}
               </>
             </div>
-            <div>
-
-              <div className=' flex gap-0 '>
-                <p onClick={() => setTab('posts')} className={tab === "posts" ? active : nonActive}>
-                  <PostIcon /> Posts
-                </p>
-                <p onClick={() => setTab('images')} className={tab === "images" ? active : nonActive}>
+            <div className='min-h-[300px]'>
+              <div className=' flex'>
+                <div onClick={() => setTab('posts')} className={tab === "posts" ? active : nonActive}>
+                  <PostIcon />
+                  <p className='hidden md:block'>Posts</p>
+                </div>
+                <div onClick={() => setTab('images')} className={tab === "images" ? active : nonActive}>
                   <PhotoIcon />
-                  Photos</p>
-                <p onClick={() => setTab('followings')} className={tab === "followings" ? active : nonActive}>
-                  <UserGroupIcon />Followings </p>
-                <p onClick={() => setTab('followers')} className={tab === "followers" ? active : nonActive}>
-                  <UserGroupIcon /> Followers
-                </p>
+                  <p className='hidden md:block'>Photos</p>
+                </div>
+                <div onClick={() => setTab('followings')} className={tab === "followings" ? active : nonActive}>
+                  <UserGroupIcon />
+                  <p className='hidden md:block'>Followings</p>
+                </div>
+                <div onClick={() => setTab('followers')} className={tab === "followers" ? active : nonActive}>
+                  <UserGroupIcon />
+                  <p className='hidden md:block'>Followers</p>
+                </div>
               </div>
 
-              {tab === "followings" && <Friends data={followings} type={"followings"} />}
-              {tab === "posts" && <Feed Profileposts={posts} profileId={profileId} isMypost={true} />}
+              {tab === "followings" ? <Friends data={followings} type={"followings"} /> : null}
+              {tab === "posts" && <Feed Profileposts={posts} profileId={profileId} render={render} forceRender={forceRender} isMypost={true} />}
               {tab === "followers" && <Friends forceRender={forceRender} render={render} data={followers} type={"followers"} />}
-              {tab === "images" && <Images post={posts} />}
+              {tab === "images" && <Images images={posts.filter(post => post.image).map(post => post.image)} />}
             </div>
           </div>
         </Card>

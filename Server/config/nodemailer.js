@@ -1,10 +1,10 @@
+import dotenv from 'dotenv'
+dotenv.config()
 import nodemailer from 'nodemailer'
-
 const transport = nodemailer.createTransport({
-    host: "sandbox.smtp.mailtrap.io",
-    port: 2525,
+    service:"gmail",
     auth: {
-        user: process.env.USER,
+        user: process.env.USER_EMAIL,
         pass: process.env.PASS
     }
 });

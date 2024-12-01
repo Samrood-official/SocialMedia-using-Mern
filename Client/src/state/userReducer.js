@@ -5,7 +5,10 @@ const initialState = {
     token: null,
     users: [],
     posts: [],
-    allPosts: []
+    allPosts: [],
+    conversation: [],
+    currentChat: null,
+    chat:{showContact:"block", showMessage:"hidden"}
 }
 
 export const userSlice = createSlice({
@@ -22,6 +25,12 @@ export const userSlice = createSlice({
         setLogout: (state) => {
             state.user = null
             state.token = null
+            state.users= []
+            state.allPosts= []
+            state.posts=[]
+            state.conversation = []
+            state.currentChat = null
+            state.chat = {showContact:"block", showMessage:"hidden"}
         },
         setFriends: (state, action) => {
             if (state.user) {
@@ -50,15 +59,27 @@ export const userSlice = createSlice({
             const users = action.payload.users
             state.users = users
         },
+        setCurrentChat: (state, action) => {
+            const currentChat = action.payload
+            state.currentChat = currentChat
+        },
+        setConversation: (state, action) => {
+            const conversation = action.payload
+            state.conversation = conversation
+        },
+        setChat: (state, action) => {
+            state.chat.showContact = action.payload.showContact
+            state.chat.showMessage = action.payload.showMessage
+        },
     }
 })
 
-export const {islogin,
+export const { islogin,
     setLogin, setLogout,
     setPost, setPosts,
     setFriends, setUserData,
     setAllUsers, setAllposts,
-    setDeletePost
+    setDeletePost, setCurrentChat, setConversation,setChat
 } = userSlice.actions
 
-export default userSlice.reducer;
+export default userSlice;

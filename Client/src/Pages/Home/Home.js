@@ -1,27 +1,23 @@
 import React from 'react'
 import Leftbar from '../../Components/LeftpostContainer/Leftbar'
 import MainPost from '../../Components/MainpostContainer/MainPost'
-import Navbar from '../../Components/Navbar/Navbar'
 import Rightbar from '../../Components/RightpostContainer/Rightbar'
-// import Sample from '../../Pages/Sample' 
+
 const Home = () => {
+
   return (
     <>
-    <div className='bg-[#efefef] min-h-screen'>
-      <Navbar />
-      {/* <Sample /> */}
-      <div className='flex flex-wrap' >
-        <div className=' hidden md:block w-1/4 p-2 relative '> 
+      <section className="grid grid-cols-1 md:grid-cols-4 gap-4 p-3 mx-auto h-[calc(100vh-64px)]">
+        <div className='hidden md:block col-span-1 overflow-scroll'>
           <Leftbar />
         </div>
-        <div className='w-full md:w-2/4 p-2 mt-2 '>
+        <div className='md:col-span-2 overflow-scroll hide-scrollbar'>
           <MainPost />
         </div>
-        <div className="hidden md:block w-1/4 p-2 relative ">
-          <Rightbar />   
+        <div className='md:col-span-1'>
+          <Rightbar />
         </div>
-      </div>
-      </div>
+      </section>
     </>
   )
 }

@@ -8,40 +8,59 @@ import crypto from 'crypto'
 import ResetToken from '../models/ResetToken.js';
 const jwt_secret_key = process.env.jwt_secret_key
 
+const getUserName = (name) => {
+    return name.split(' ')[0] + '_' + Math.floor(Math.random() * 10000);
+}
+
 export const register = async (req, res) => {
     try {
-        let user = await User.findOne({ email: req.body.email })
+        const {name, email, phoneNumber, password} = req.body;
+        let user = await User.findOne({ email })
         if (user) {
             return res.status(403).json({ msg: "Email Already Exist" })
         }
         const saltRounds = await bcrypt.genSalt(10)
-        const hashedpassword = await bcrypt.hash(req.body.password, saltRounds)
+        const hashedpassword = await bcrypt.hash(password, saltRounds)
+        const userName = getUserName(name);
+
         user = await User.create({
-            name: req.body.name,
-            userName: req.body.userName,
-            email: req.body.email,
+            name: name,
+            userName,
+            email: email,
             password: hashedpassword,
-            phoneNumber: req.body.phoneNumber
+            authType: 'email',
+            phoneNumber: phoneNumber
         })
+
         const accessToken = Jwt.sign({
             id: user._id,
             userName: user.userName,
         }, jwt_secret_key)
+
         await user.save()
 
-        //for emailverification
+        // emailverification
         const otp = genrateotp()
         const verificationToken = await VerificationToken.create({
             user: user._id,
             token: otp
         })
+
         await verificationToken.save()
+
         // sending otp to user mail
-        transport.sendMail({
-            from: "socialmedia@gmail.com",
+        let details = {
+            from: process.env.USER_EMAIL || '',
             to: user.email,
             subject: "verify your email using otp",
             html: `<h1>Your Otp Code ${otp}</h1>`
+        }
+
+        transport.sendMail(details, (err) => {
+            if (err) {
+
+            } else
+                console.log('success..........');
         })
 
         return res.status(200).json({
@@ -50,7 +69,6 @@ export const register = async (req, res) => {
             user: user._id,
         })
     } catch (err) {
-        console.log(err);
         return res.status(500).json("internal error Occured" + err)
     }
 }
@@ -59,11 +77,11 @@ export const register = async (req, res) => {
 export const login = async (req, res) => {
     try {
         // const userData = await User.findOne({ userName: req.body.userName }).populate('followers').populate('followings')
-        const userData = await User.findOne({ userName: req.body.userName })
+        const userData = await User.findOne({ email: req.body.email })
         if (!userData) {
             return res.status(400).json({ msg: "user Not Exist" })
         }
-        if(userData.isBlocked){
+        if (userData.isBlocked) {
             return res.status(400).json({ msg: "You are blocked" })
         }
 
@@ -79,7 +97,7 @@ export const login = async (req, res) => {
         res.status(200).json({ user, accessToken })
 
     } catch (err) {
-        console.log(err);
+
         return res.status(500).json({ error: err.message })
     }
 }
@@ -98,7 +116,6 @@ export const verifyEmail = async (req, res) => {
 
         await VerificationToken.findByIdAndDelete(token._id)
         await mainuser.save()
-        console.log(mainuser, "ggggggggggggg")
         const accessToken = Jwt.sign({
             id: userId,
             userName: mainuser.userName
@@ -106,14 +123,14 @@ export const verifyEmail = async (req, res) => {
         const { password, ...user } = mainuser._doc
 
         transport.sendMail({
-            from: "socialmedia@gmail.com",
+            from: process.env.USER_EMAIL,
             to: user.email,
             subject: "Successfully verified email",
             html: `<h1>now you can login</h1>`
         })
         return res.status(200).json({ user, accessToken })
     } catch (err) {
-        console.log(err);
+
         return res.status(500).json('internal error')
     }
 }
@@ -132,17 +149,17 @@ export const forgotPassword = async (req, res) => {
         })
         await resetToken.save()
         transport.sendMail({
-            from: "sender@server.com",
+            from: process.env.USER_EMAIL,
             to: user.email,
-            subject: "reset token",
+            subject: "Reset token",
             html: `
-        <a href="http://localhost:3000/resetPassword?token=${randomText}&userId=${userId}">password reset link</a>`
+        <a href="https://main.d30vnh38wloxsg.amplifyapp.com/resetPassword?token=${randomText}&userId=${userId}">password reset link</a>`
         })
         return res.status(200).json({ msg: 'check your email to reset password' })
 
     } catch (err) {
-        console.log(err);
-        return res.status(500).json('internal error')
+
+        return res.status(500).json({ msg: 'internal error' })
     }
 }
 
@@ -167,14 +184,14 @@ export const resetPassword = async (req, res) => {
         await user.save()
 
         transport.sendMail({
-            from: "sender@server.com",
+            from: process.env.USER_EMAIL,
             to: user.email,
-            subject: "your password reset successfull",
+            subject: "Your password reset successfull",
             html: `now you can login`
         })
         return res.status(200).json({ msg: 'you can login now' })
     } catch (err) {
-        console.log(err);
+
         return res.status(500).json('internal error')
     }
 }
@@ -186,20 +203,23 @@ export const googleLogin = async (req, res) => {
         const token = authHeader.split(" ")[1];
         const result = Jwt.decode(token)
         const name = result.name
-        const userName = result.given_name
+        const userName = getUserName(result.given_name)
         const email = result.email
-        const checkUser =await User.findOne({email:email})
-        if(checkUser){
+        const checkUser = await User.findOne({ email: email })
+
+        if (checkUser) {
             const accessToken = Jwt.sign({
                 id: checkUser._id,
                 userName: checkUser.userName,
             }, jwt_secret_key)
 
-            return res.status(200).json({ user:checkUser, accessToken })
+            return res.status(200).json({ user: checkUser, accessToken })
         }
+
         const user = await new User({
-            name, email, userName,verified:true
+            name, email, userName, authType: 'google', verified: true
         })
+
         await user.save()
         const accessToken = Jwt.sign({
             id: user._id,
@@ -207,7 +227,6 @@ export const googleLogin = async (req, res) => {
         }, jwt_secret_key)
         return res.status(200).json({ user, accessToken })
     } catch (err) {
-        console.log(err);
         res.status(500).json("internal error")
     }
 } 
